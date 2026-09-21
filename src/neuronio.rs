@@ -48,6 +48,20 @@ impl Neuronio {
     }
 
     /**
+    Este função permite iniciar os neurónios com pesos especificos
+    */
+    pub fn iniciar_manual(w: &[f64], b: f64, phi: Phi) -> Self {
+        Neuronio {
+            d: w.len(),
+            phi,
+            w: w.to_vec(),
+            b,
+            h: 0.0,
+            y: 0.0,
+        }
+    }
+
+    /**
     O seguinte método pretende representar a função de tranfêrencia do neurónio aplicada a um vetor de entrada, x.
     */
     pub fn propagar(&mut self, x: &[f64]) -> f64 {

@@ -61,7 +61,7 @@ impl RedeNeuronal {
     /**
     O seguinte método permite prever os vetores de saida resultantes da propagação da rede neuronal, quando aplicada sob vários vetores de entrada.
     */
-    pub fn prever(&mut self, x: Vec<Vec<f64>>) -> Vec<Vec<f64>> {
+    pub fn prever(&mut self, x: &[&[f64]]) -> Vec<Vec<f64>> {
         x.iter().map(|v| self.propagar(v)).collect()
     }
 }

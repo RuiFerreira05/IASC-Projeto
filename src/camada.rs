@@ -1,3 +1,5 @@
+use std::assert_eq;
+
 use crate::{neuronio::Neuronio, phi::Phi};
 
 /**
@@ -36,6 +38,39 @@ impl Camada {
             ds,
             phi,
             neuronios: (0..ds).map(|_| Neuronio::iniciar(de, phi)).collect(),
+        }
+    }
+
+    /**
+     * Esta função permite iniciar uma camada da rede neuronal com neurónios cujos pesos e pendors são determinados manualmente
+     */
+    pub fn iniciar_densa_manual(w: &[&[f64]], b: &[f64], ds: usize, phi: Phi) -> Self {
+        assert_eq!(
+            w.len(),
+            ds,
+            "A primeira dimensão do vetor de pesos não tem o tamanho correto (Esperado: {}, Recebido: {})",
+            ds,
+            w.len()
+        );
+
+        assert_eq!(
+            b.len(),
+            w.len(),
+            "Numero de pendores não corresponde com número de neurónios (Esperado: {}, Recebido: {})",
+            w.len(),
+            b.len(),
+        );
+
+        let mut neuronios = Vec::with_capacity(ds);
+        for i in 0..ds {
+            neuronios.push(Neuronio::iniciar_manual(w[i], b[i], phi));
+        }
+
+        Camada::Densa {
+            de: w.len(),
+            ds,
+            phi,
+            neuronios: neuronios,
         }
     }
 
