@@ -1,65 +1,99 @@
-use crate::{neuronio::Neuronio, phi::{Phi}};
+use crate::{neuronio::Neuronio, phi::Phi};
 
 pub trait Camada {
-    fn propagar(&self, x: &[f64]) -> Vec<f64>;
+    fn propagar(&mut self, x: &[f64]) -> Vec<f64>;
+
+    fn y(&self) -> Vec<f64>;
 }
 
 /**
- O seguinte struct pretende representar uma camada de entrada de uma rede neuronal.
+O seguinte struct pretende representar uma camada de entrada de uma rede neuronal.
 
- A camada de entrada de uma rede neuronal tem como único objetivo disponibilizar os dados de entrada para as restantes camadas da rede neuronal.
- Por isto, esta encontra-se representada em código, como um Struct sem propriedades, cuja unica função consiste de propagar o vetor de entrada para a sua saida.
- */
-pub struct CamadaEntrada {}
+A camada de entrada de uma rede neuronal tem como único objetivo disponibilizar os dados de entrada para as restantes camadas da rede neuronal.
+Por isto, esta encontra-se representada em código, como um Struct sem propriedades, cuja unica função consiste de propagar o vetor de entrada para a sua saida.
+*/
+pub struct CamadaEntrada {
+    ds: usize,
+    y: Vec<f64>,
+}
 
 impl CamadaEntrada {
     /**
-     Camada de entrada é iniciada a partir da dimensão de saida, que dita o número de neuronios que constituem esta.
-     No entanto, visto que o único proposito desta é propagar os dados de entrada para a saida, em código esta não contem neuronios e é iniciada vazia.
-     */
-    pub fn iniciar(_ds: usize) -> Self {
-        CamadaEntrada {}
+    Camada de entrada é iniciada a partir da dimensão de saida, que dita o número de neuronios que constituem esta.
+    No entanto, visto que o único proposito desta é propagar os dados de entrada para a saida, em código esta não contem neuronios e é iniciada vazia.
+    */
+    pub fn iniciar(ds: usize) -> Self {
+        CamadaEntrada {
+            ds,
+            y: vec![0.0; ds],
+        }
     }
 }
 
 impl Camada for CamadaEntrada {
     /**
-     Sendo o único propósito da camada de entrada propagar o vetor de entrada para a saida, este método acaba por apenas retornar o próprio vetor de entrada, para simplificar.
-     */
-    fn propagar(&self, x: &[f64]) -> Vec<f64> {
-        x.to_vec()
+    Sendo o único propósito da camada de entrada propagar o vetor de entrada para a saida, este método acaba por apenas retornar o próprio vetor de entrada, para simplificar.
+    */
+    fn propagar(&mut self, x: &[f64]) -> Vec<f64> {
+        assert_eq!(
+            x.len(),
+            self.ds,
+            "Entrada com tamanho incorreto (Esperado: {}, Recebido: {})",
+            self.ds,
+            x.len()
+        );
+        self.y = x.to_vec();
+
+        self.y.clone()
+    }
+
+    fn y(&self) -> Vec<f64> {
+        self.y.clone()
     }
 }
 
 /**
- O seguinte struct representa uma camada densa da rede neuronal.
+O seguinte struct representa uma camada densa da rede neuronal.
 
- Uma camada densa consiste de um agrupamento de neurónios onde cada um consome todo o vetor de entradas e produz uma saida atravéz da sua função de transferência.
- */
+Uma camada densa consiste de um agrupamento de neurónios onde cada um consome todo o vetor de entradas e produz uma saida atravéz da sua função de transferência.
+*/
 pub struct CamadaDensa {
-    neuronios: Vec<Neuronio>
+    de: usize,
+    ds: usize,
+    phi: Phi,
+    neuronios: Vec<Neuronio>,
 }
 
 impl CamadaDensa {
     /**
-     Uma camada densa é iniciada especificando:
-     * A dimensão do vetor de entrada, que irá ser consumido por todos os neurónios;
-     * A dimensão do vetor de saida, que consiste por si de todas as saidas de todos os neurónios (daí indicando o número de neurónios);
-     * A função de ativação que cada neurónio implementará;
-     */
+    Uma camada densa é iniciada especificando:
+    * A dimensão do vetor de entrada, que irá ser consumido por todos os neurónios;
+    * A dimensão do vetor de saida, que consiste por si de todas as saidas de todos os neurónios (daí indicando o número de neurónios);
+    * A função de ativação que cada neurónio implementará;
+    */
     pub fn iniciar(de: usize, ds: usize, phi: Phi) -> Self {
         CamadaDensa {
+            de,
+            ds,
+            phi,
             // Gerar "ds" neurónios, cada um iniciado com o vetor de entrada da camada, e a função de ativação.
-            neuronios: (0..ds).map(|_| Neuronio::iniciar(de, phi)).collect()
+            neuronios: (0..ds).map(|_| Neuronio::iniciar(de, phi)).collect(),
         }
     }
 }
 
 impl Camada for CamadaDensa {
     /**
-     Propagar uma camada densa de uma rede neuronal consiste em propagar cada neurónio dessa camada, reunindo os resultados num vetor de saida.
-     */
-    fn propagar(&self, x: &[f64]) -> Vec<f64> {
-        self.neuronios.iter().map(|neuronio| neuronio.propagar(x)).collect()
+    Propagar uma camada densa de uma rede neuronal consiste em propagar cada neurónio dessa camada, reunindo os resultados num vetor de saida.
+    */
+    fn propagar(&mut self, x: &[f64]) -> Vec<f64> {
+        self.neuronios
+            .iter_mut()
+            .map(|neuronio| neuronio.propagar(x))
+            .collect()
+    }
+
+    fn y(&self) -> Vec<f64> {
+        self.neuronios.iter().map(|neuronio| neuronio.y).collect()
     }
 }

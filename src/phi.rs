@@ -1,10 +1,10 @@
 /**
- O seguinte enum pretende representar todos as funções de ativação possiveis de um neurónio, que presentemente consistem da função de degrau e de tangente
- */
+O seguinte enum pretende representar todos as funções de ativação possiveis de um neurónio, que presentemente consistem da função de degrau e de tangente
+*/
 #[derive(Debug, Clone, Copy)]
 pub enum Phi {
     Degrau,
-    Tan
+    Tan,
 }
 
 impl Phi {
@@ -17,11 +17,9 @@ impl Phi {
                 } else {
                     0.0
                 }
-            },
+            }
             // A função de ativação Tan produz a tangente da soma de ativação
-            Phi::Tan => {
-                h.tanh()
-            },
+            Phi::Tan => h.tanh(),
         }
     }
 }
