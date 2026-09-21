@@ -1,13 +1,10 @@
-use crate::{
-    camada::{Camada, CamadaDensa, CamadaEntrada},
-    phi::Phi,
-};
+use crate::{camada::Camada, phi::Phi};
 
 /**
 Uma rede neuronal (neste caso, multicamada) consiste da junção de multiplas camadas de neurónios interligados entre si.
 */
 pub struct RedeNeuronal {
-    pub camadas: Vec<Box<dyn Camada>>,
+    pub camadas: Vec<Camada>,
 }
 
 impl RedeNeuronal {
@@ -30,28 +27,18 @@ impl RedeNeuronal {
         );
 
         // Gerar o vetor vazio com capacidade n
-        let mut camadas: Vec<Box<dyn Camada>> = Vec::with_capacity(n);
+        let mut camadas: Vec<Camada> = Vec::with_capacity(n);
 
-        // Gerar a camada de entrada independentemente
+        // Gerar a camada de entrada
         let de_1 = forma[0];
-        let camada_1 = CamadaEntrada::iniciar(de_1);
-        camadas.push(Box::new(camada_1));
+        camadas.push(Camada::iniciar_entrada(de_1));
 
         // Iterar sob o vetor de forma, reunir as dimensões de entrada e saida de cada camada, e gerar a camada
         for i in 1..n {
             let de_n = forma[i - 1];
             let ds_n = forma[i];
-            let camada_n = CamadaDensa::iniciar(de_n, ds_n, phi);
-            camadas.push(Box::new(camada_n));
+            camadas.push(Camada::iniciar_densa(de_n, ds_n, phi));
         }
-
-        // Possivel implementação com "janelas" do rust. No entanto, comentado para manter aproximação com o pseudo-codigo
-        // for dim in forma.windows(2) {
-        //     let de_n = dim[0];
-        //     let ds_n = dim[1];
-        //     let camada_n = CamadaDensa::iniciar(de_n, ds_n, phi);
-        //     camadas.push(Box::new(camada_n));
-        // }
 
         RedeNeuronal { camadas }
     }
