@@ -3,14 +3,22 @@ O seguinte enum pretende representar todos as funções de ativação possiveis 
 */
 #[derive(Debug, Clone, Copy)]
 pub enum Phi {
+    /// A função de ativação degrau (step) produz o valor 1 para todas as somas de ativação positivas (ou zero), e 0 para todos as somas de ativação negativas
     Degrau,
-    Tan,
+
+    /// A função de ativação Relu (Rectified Linear Unit) reproduz a soma de ativação quando esta é positiva, e 0 quando esta é negativa
+    Relu,
+
+    /// A função de ativação sigmoide calcula a sigmoide da soma de ativação
+    Sigmoide,
+
+    /// A função de ativação Tangente Hiperbólica produz a tangente hiperbólica da soma de ativação
+    Tanh,
 }
 
 impl Phi {
     pub fn aplicar(&self, h: f64) -> f64 {
         match self {
-            // A função de ativação degrau (step) produz o valor 1 para todas as somas de ativação positivas (ou zero), e 0 para todos as somas de ativação negativas
             Phi::Degrau => {
                 if h >= 0.0 {
                     1.0
@@ -18,8 +26,18 @@ impl Phi {
                     0.0
                 }
             }
-            // A função de ativação Tan produz a tangente da soma de ativação
-            Phi::Tan => h.tanh(),
+
+            Phi::Relu => {
+                if h >= 0.0 {
+                    h
+                } else {
+                    0.0
+                }
+            }
+
+            Phi::Sigmoide => 1.0 / (1.0 + (-h).exp()),
+
+            Phi::Tanh => h.tanh(),
         }
     }
 }
