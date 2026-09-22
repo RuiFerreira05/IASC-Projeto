@@ -1,8 +1,8 @@
 use crate::{camada::Camada, phi::Phi};
 
 /**
-Uma rede neuronal (neste caso, multicamada) consiste da junção de multiplas camadas de neurónios interligados entre si.
-*/
+ * Uma rede neuronal (neste caso, multicamada) consiste da junção de multiplas camadas de neurónios interligados entre si.
+ */
 pub struct RedeNeuronal {
     pub camadas: Vec<Camada>,
 }
@@ -13,10 +13,10 @@ impl RedeNeuronal {
     }
 
     /**
-    Iniciar uma rede neural requer especificar:
-    * A sua forma, aqui representada por um vetor, onde cada entrada representa o número de neurónios de uma camada
-    * A função de ativação que cada neurónio da rede neuronal vai implementar.
-    */
+     * Iniciar uma rede neural requer especificar:
+     * * A sua forma, aqui representada por um vetor, onde cada entrada representa o número de neurónios de uma camada
+     * * A função de ativação que cada neurónio da rede neuronal vai implementar.
+     */
     pub fn iniciar(forma: &[usize], phi: Phi) -> Self {
         // Número de camadas da rede
         let n = forma.len();
@@ -44,9 +44,35 @@ impl RedeNeuronal {
     }
 
     /**
-    Propagar uma rede neuronal consiste em propagar cada camada da mesma, que por si propagam os seus neurónios.
-    A propagação de uma rede neuronal produz um vetor de saida com dimensão igual ao número de neurónios da sua última camada (camada de saida)
-    */
+     * A seguinte função permite a criação de uma rede neuronal com pârametros
+     * prédefinidos através do parâmetro theta
+     */
+    pub fn iniciar_manual(theta: &[&[(&[f64], f64)]], phi: Phi) -> Self {
+        let mut camadas: Vec<Camada> = Vec::with_capacity(theta.len() + 1);
+
+        // Dimensão de entrada da segunda camada
+        let de_2 = theta[0][0].0.len();
+        camadas.push(Camada::iniciar_entrada(de_2));
+
+        for camada in theta {
+            let ds = camada.len();
+            let (w, b): (Vec<&[f64]>, Vec<f64>) = camada.iter().copied().unzip();
+            camadas.push(Camada::iniciar_densa_manual(
+                w.as_slice(),
+                b.as_slice(),
+                ds,
+                phi,
+            ));
+        }
+
+        RedeNeuronal { camadas }
+    }
+
+    /**
+     * Propagar uma rede neuronal consiste em propagar cada camada da mesma, que por si propagam os seus neurónios.
+     * A propagação de uma rede neuronal produz um vetor de saida com dimensão igual ao número de
+     * neurónios da sua última camada (camada de saida)
+     */
     pub fn propagar(&mut self, x: &[f64]) -> Vec<f64> {
         let mut y = x.to_vec();
 
