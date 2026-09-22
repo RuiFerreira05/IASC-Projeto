@@ -70,7 +70,7 @@ impl Camada {
             de: w.len(),
             ds,
             phi,
-            neuronios: neuronios,
+            neuronios,
         }
     }
 
@@ -108,6 +108,45 @@ impl Camada {
             Camada::Densa { neuronios, .. } => {
                 neuronios.iter().map(|neuronio| neuronio.y).collect()
             }
+        }
+    }
+
+    pub fn ds(&self) -> usize {
+        match self {
+            Camada::Entrada { ds, y } => *ds,
+            Camada::Densa {
+                de,
+                ds,
+                phi,
+                neuronios,
+            } => *ds,
+        }
+    }
+
+    pub fn neuronios(&self) -> Vec<Neuronio> {
+        match self {
+            Camada::Entrada { ds, y } => Vec::new(),
+            Camada::Densa {
+                de,
+                ds,
+                phi,
+                neuronios,
+            } => neuronios.clone(),
+        }
+    }
+
+    pub fn adaptar(&mut self, delta: &[f64], y_anterior: &[f64], alpha: f64) {
+        match self {
+            Camada::Entrada { ds, y } => {}
+            Camada::Densa {
+                de,
+                ds,
+                phi,
+                neuronios,
+            } => neuronios
+                .iter_mut()
+                .zip(delta)
+                .for_each(|(neuronio_j, delta_j)| neuronio_j.adaptar(*delta_j, y_anterior, alpha)),
         }
     }
 }

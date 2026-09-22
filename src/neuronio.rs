@@ -10,6 +10,7 @@ Esta funcção de transfência consiste de aplicar uma função de ativação (a
 soma de ativação (produto escalar das entradas pelos pesos, aqui representados pelo vetor "w", mais o valor do pendor,
 representado pela propriedade "b").
 */
+#[derive(Debug, Clone)]
 pub struct Neuronio {
     /// Tamanho do vetor de entrada
     pub d: usize,
@@ -28,6 +29,9 @@ pub struct Neuronio {
 
     /// saida do neurónio (y = f(x))
     pub y: f64,
+
+    /// derivada da saida do neurónio
+    pub y_derivada: f64,
 }
 
 impl Neuronio {
@@ -37,14 +41,10 @@ impl Neuronio {
     * A função de ativação aplicada sob a soma de ativação
     */
     pub fn iniciar(d: usize, phi: Phi) -> Self {
-        Neuronio {
-            d,
-            phi,
-            w: (0..d).map(|_| random_range(-1.0..=1.0)).collect(), // Para cada entrada, gerar um peso aleatório entre -1 e 1, inclusive
-            b: random_range(-1.0..=1.0), // Gerar um pendor aleatório entre -1 e 1
-            h: 0.0,
-            y: 0.0,
-        }
+        let w: Vec<f64> = (0..d).map(|_| random_range(-1.0..=1.0)).collect();
+        let b: f64 = random_range(-1.0..=1.0);
+
+        Neuronio::iniciar_manual(&w, b, phi)
     }
 
     /**
@@ -58,6 +58,7 @@ impl Neuronio {
             b,
             h: 0.0,
             y: 0.0,
+            y_derivada: 0.0,
         }
     }
 
@@ -83,7 +84,30 @@ impl Neuronio {
         // aplicar a função de ativação sob a soma de ativação
         self.y = self.phi.aplicar(self.h);
 
+        self.y_derivada = self.phi.derivar(self.h);
+
         // Retornar a saida do neurónio
         self.y
+    }
+
+    /**
+     * A seguinte função adapta os pesos do neurónio com base em:
+     * * Um componente de propagação do erro na saida do neurónio, delta
+     * * O vetor de saida da camada anterior
+     * * a taxa de aprendizagem
+     */
+    pub fn adaptar(&mut self, delta: f64, y_anterior: &[f64], alpha: f64) {
+        let escalar = -alpha * self.y_derivada * delta;
+
+        // Atualizar pesos
+        let weight_var: Vec<f64> = y_anterior.iter().map(|&py| escalar * py).collect();
+        self.w
+            .iter_mut()
+            .zip(weight_var)
+            .for_each(|(w, w_var)| *w += w_var);
+
+        // Atualizar pendor
+        let b_var: f64 = escalar;
+        self.b += b_var;
     }
 }

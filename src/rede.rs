@@ -1,4 +1,7 @@
-use crate::{camada::Camada, phi::Phi};
+use crate::{
+    camada::{self, Camada},
+    phi::Phi,
+};
 
 /**
  * Uma rede neuronal (neste caso, multicamada) consiste da junção de multiplas camadas de neurónios interligados entre si.
@@ -89,5 +92,34 @@ impl RedeNeuronal {
     */
     pub fn prever(&mut self, x: &[&[f64]]) -> Vec<Vec<f64>> {
         x.iter().map(|v| self.propagar(v)).collect()
+    }
+
+    pub fn delta_saida(y_n: &[f64], y: &[f64]) -> Vec<f64> {
+        y_n.iter().zip(y).map(|(yk_n, yk)| yk_n - yk).collect()
+    }
+
+    pub fn retropropagar(&mut self, delta_saida: &[f64], alpha: f64) {
+        let mut delta_n = delta_saida.to_vec();
+        for n in (1..self.camadas.len()).rev() {
+            let y_anterior = self.camadas[n - 1].y();
+            let dimensao_anterior = self.camadas[n - 1].ds();
+            let dimensao = self.camadas[n].ds();
+            let neuronios_n = self.camadas[n].neuronios();
+
+            let mut delta_anterior = vec![0.0; dimensao_anterior];
+
+            for i in 0..dimensao_anterior {
+                let mut soma = 0.0;
+                for j in 0..dimensao {
+                    // neur^n[j].w_i * delta^n_j * neur^n[j].y'
+                    soma += neuronios_n[j].w[i] * delta_n[j] * neuronios_n[j].y_derivada;
+                }
+                delta_anterior[i] = soma;
+            }
+
+            self.camadas[n].adaptar(delta_n.as_slice(), &y_anterior, alpha);
+
+            delta_n = delta_anterior;
+        }
     }
 }

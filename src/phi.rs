@@ -40,4 +40,23 @@ impl Phi {
             Phi::Tanh => h.tanh(),
         }
     }
+
+    pub(crate) fn derivar(&self, h: f64) -> f64 {
+        match self {
+            Phi::Degrau => 0.0,
+            Phi::Relu => {
+                if h <= 0.0 {
+                    0.0
+                } else {
+                    1.0
+                }
+            }
+            Phi::Sigmoide => {
+                let phi_h = self.aplicar(h);
+
+                phi_h * (1.0 - phi_h)
+            }
+            Phi::Tanh => 1.0 - h.tanh().powi(2),
+        }
+    }
 }
