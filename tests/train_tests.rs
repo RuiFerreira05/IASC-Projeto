@@ -74,76 +74,94 @@ fn test_adaptar_reduces_error() {
 
 #[test]
 fn test_and_training() {
-    let x: &[&[f64]] = &[
-        &[0.0, 0.0],
-        &[0.0, 1.0],
-        &[1.0, 0.0],
-        &[1.0, 1.0],
-    ];
-    let y: &[&[f64]] = &[
-        &[0.0],
-        &[0.0],
-        &[0.0],
-        &[1.0],
-    ];
+    let x: &[&[f64]] = &[&[0.0, 0.0], &[0.0, 1.0], &[1.0, 0.0], &[1.0, 1.0]];
+    let y: &[&[f64]] = &[&[0.0], &[0.0], &[0.0], &[1.0]];
 
     let mut rede = RedeNeuronal::iniciar(&[2, 1], Phi::Sigmoide);
     rede.treinar(x, y, 10000, 0.01, 0.5);
 
     let pred = rede.prever(x);
-    assert!(pred[0][0] < 0.2, "0 AND 0 esperado < 0.2, obtido {}", pred[0][0]);
-    assert!(pred[1][0] < 0.2, "0 AND 1 esperado < 0.2, obtido {}", pred[1][0]);
-    assert!(pred[2][0] < 0.2, "1 AND 0 esperado < 0.2, obtido {}", pred[2][0]);
-    assert!(pred[3][0] > 0.8, "1 AND 1 esperado > 0.8, obtido {}", pred[3][0]);
+    assert!(
+        pred[0][0] < 0.2,
+        "0 AND 0 esperado < 0.2, obtido {}",
+        pred[0][0]
+    );
+    assert!(
+        pred[1][0] < 0.2,
+        "0 AND 1 esperado < 0.2, obtido {}",
+        pred[1][0]
+    );
+    assert!(
+        pred[2][0] < 0.2,
+        "1 AND 0 esperado < 0.2, obtido {}",
+        pred[2][0]
+    );
+    assert!(
+        pred[3][0] > 0.8,
+        "1 AND 1 esperado > 0.8, obtido {}",
+        pred[3][0]
+    );
 }
 
 #[test]
 fn test_or_training() {
-    let x: &[&[f64]] = &[
-        &[0.0, 0.0],
-        &[0.0, 1.0],
-        &[1.0, 0.0],
-        &[1.0, 1.0],
-    ];
-    let y: &[&[f64]] = &[
-        &[0.0],
-        &[1.0],
-        &[1.0],
-        &[1.0],
-    ];
+    let x: &[&[f64]] = &[&[0.0, 0.0], &[0.0, 1.0], &[1.0, 0.0], &[1.0, 1.0]];
+    let y: &[&[f64]] = &[&[0.0], &[1.0], &[1.0], &[1.0]];
 
     let mut rede = RedeNeuronal::iniciar(&[2, 1], Phi::Sigmoide);
     rede.treinar(x, y, 10000, 0.01, 0.5);
 
     let pred = rede.prever(x);
-    assert!(pred[0][0] < 0.2, "0 OR 0 esperado < 0.2, obtido {}", pred[0][0]);
-    assert!(pred[1][0] > 0.8, "0 OR 1 esperado > 0.8, obtido {}", pred[1][0]);
-    assert!(pred[2][0] > 0.8, "1 OR 0 esperado > 0.8, obtido {}", pred[2][0]);
-    assert!(pred[3][0] > 0.8, "1 OR 1 esperado > 0.8, obtido {}", pred[3][0]);
+    assert!(
+        pred[0][0] < 0.2,
+        "0 OR 0 esperado < 0.2, obtido {}",
+        pred[0][0]
+    );
+    assert!(
+        pred[1][0] > 0.8,
+        "0 OR 1 esperado > 0.8, obtido {}",
+        pred[1][0]
+    );
+    assert!(
+        pred[2][0] > 0.8,
+        "1 OR 0 esperado > 0.8, obtido {}",
+        pred[2][0]
+    );
+    assert!(
+        pred[3][0] > 0.8,
+        "1 OR 1 esperado > 0.8, obtido {}",
+        pred[3][0]
+    );
 }
 
 #[test]
 fn test_xor_training() {
-    let x: &[&[f64]] = &[
-        &[0.0, 0.0],
-        &[0.0, 1.0],
-        &[1.0, 0.0],
-        &[1.0, 1.0],
-    ];
-    let y: &[&[f64]] = &[
-        &[0.0],
-        &[1.0],
-        &[1.0],
-        &[0.0],
-    ];
+    let x: &[&[f64]] = &[&[0.0, 0.0], &[0.0, 1.0], &[1.0, 0.0], &[1.0, 1.0]];
+    let y: &[&[f64]] = &[&[0.0], &[1.0], &[1.0], &[0.0]];
 
     // XOR requer camada oculta não linear
     let mut rede = RedeNeuronal::iniciar(&[2, 4, 1], Phi::Sigmoide);
     rede.treinar(x, y, 30000, 0.005, 0.5);
 
     let pred = rede.prever(x);
-    assert!(pred[0][0] < 0.2, "0 XOR 0 esperado < 0.2, obtido {}", pred[0][0]);
-    assert!(pred[1][0] > 0.8, "0 XOR 1 esperado > 0.8, obtido {}", pred[1][0]);
-    assert!(pred[2][0] > 0.8, "1 XOR 0 esperado > 0.8, obtido {}", pred[2][0]);
-    assert!(pred[3][0] < 0.2, "1 XOR 1 esperado < 0.2, obtido {}", pred[3][0]);
+    assert!(
+        pred[0][0] < 0.2,
+        "0 XOR 0 esperado < 0.2, obtido {}",
+        pred[0][0]
+    );
+    assert!(
+        pred[1][0] > 0.8,
+        "0 XOR 1 esperado > 0.8, obtido {}",
+        pred[1][0]
+    );
+    assert!(
+        pred[2][0] > 0.8,
+        "1 XOR 0 esperado > 0.8, obtido {}",
+        pred[2][0]
+    );
+    assert!(
+        pred[3][0] < 0.2,
+        "1 XOR 1 esperado < 0.2, obtido {}",
+        pred[3][0]
+    );
 }
