@@ -1,7 +1,4 @@
-use crate::{
-    camada::{self, Camada},
-    phi::Phi,
-};
+use crate::{camada::Camada, phi::Phi};
 
 /**
  * Uma rede neuronal (neste caso, multicamada) consiste da junção de multiplas camadas de neurónios interligados entre si.
@@ -95,6 +92,13 @@ impl RedeNeuronal {
     }
 
     pub fn delta_saida(y_n: &[f64], y: &[f64]) -> Vec<f64> {
+        assert_eq!(
+            y_n.len(),
+            y.len(),
+            "O vetor de saída da rede e o vetor esperado devem ter o mesmo tamanho (Saída: {}, Esperado: {})",
+            y_n.len(),
+            y.len()
+        );
         y_n.iter().zip(y).map(|(yk_n, yk)| yk_n - yk).collect()
     }
 
@@ -120,6 +124,49 @@ impl RedeNeuronal {
             self.camadas[n].adaptar(delta_n.as_slice(), &y_anterior, alpha);
 
             delta_n = delta_anterior;
+        }
+    }
+
+    pub fn adaptar(&mut self, x: &[f64], y: &[f64], alpha: f64) -> f64 {
+        let y_n = self.propagar(x);
+        let delta_n = RedeNeuronal::delta_saida(&y_n, y);
+
+        self.retropropagar(&delta_n, alpha);
+        let k = delta_n.len();
+        let epsilon: f64 = delta_n
+            .iter()
+            .map(|delta_n_k| delta_n_k.powi(2))
+            .sum::<f64>()
+            / (k as f64);
+
+        epsilon
+    }
+
+    pub fn treinar(
+        &mut self,
+        x: &[&[f64]],
+        y: &[&[f64]],
+        n_epocas: usize,
+        epsilon_max: f64,
+        alpha: f64,
+    ) {
+        assert_eq!(
+            x.len(),
+            y.len(),
+            "O número de entradas deve ser igual ao número de saídas esperadas"
+        );
+
+        for _ in 0..n_epocas {
+            let mut epsilon = 0.0;
+
+            for (&x_set, &y_set) in x.iter().zip(y) {
+                let epsilon_x = self.adaptar(x_set, y_set, alpha);
+                epsilon = f64::max(epsilon, epsilon_x);
+            }
+
+            if epsilon < epsilon_max {
+                break;
+            }
         }
     }
 }
