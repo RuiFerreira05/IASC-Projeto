@@ -96,15 +96,15 @@ impl Neuronio {
      * * O vetor de saida da camada anterior
      * * a taxa de aprendizagem
      */
-    pub fn adaptar(&mut self, delta: f64, y_anterior: &[f64], alpha: f64) {
-        let escalar = -alpha * self.y_derivada * delta;
+    pub fn adaptar(&mut self, propagacao_erro: f64, y_anterior: &[f64], alpha: f64) {
+        let escalar = -alpha * self.y_derivada * propagacao_erro;
 
         // Atualizar pesos
         let weight_var: Vec<f64> = y_anterior.iter().map(|&py| escalar * py).collect();
         self.w
             .iter_mut()
             .zip(weight_var)
-            .for_each(|(w, w_var)| *w += w_var);
+            .for_each(|(w, var_w)| *w += var_w);
 
         // Atualizar pendor
         let b_var: f64 = escalar;
