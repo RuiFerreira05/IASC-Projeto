@@ -1,9 +1,5 @@
-use projeto::{neuronio, phi::Phi, rede::RedeNeuronal};
+use projeto::{phi::Phi, rede::RedeNeuronal};
 use rand::random_range;
-
-fn usize_to_binary_array(val: usize) -> Vec<usize> {
-    (0..usize::BITS).rev().map(|i| (val >> i) & 1).collect()
-}
 
 fn gen_vbar_array(
     x_len: usize,
@@ -36,30 +32,6 @@ fn gen_vbar_array(
         array.push(row);
     }
     array
-}
-
-fn gen_random_vbar_array(
-    x_len: usize,
-    y_len: usize,
-    vbar_num: usize,
-    noise: f64,
-) -> Vec<Vec<usize>> {
-    assert!(
-        vbar_num <= x_len,
-        "Número de barras verticais deve ser menor que x_len"
-    );
-
-    let mut vbar_indices: Vec<usize> = Vec::with_capacity(vbar_num);
-
-    while vbar_indices.len() < vbar_num {
-        let rand = random_range(0..x_len);
-        if vbar_indices.contains(&rand) {
-            continue;
-        }
-        vbar_indices.push(rand);
-    }
-
-    gen_vbar_array(x_len, y_len, &vbar_indices, noise)
 }
 
 #[test]
@@ -120,49 +92,3 @@ fn vbar_learning_test() {
     assert!(pred[3][0] < 0.2);
     assert!(pred[4][0] < 0.2);
 }
-
-// #[test]
-// fn vbar_learning_test_with_counting() {
-//     let x_len = 100;
-//     let y_len = 100;
-
-//     let phi = Phi::Sigmoide;
-//     let num_neuronios_camada_escondida = 100;
-//     let num_neuronios_camada_saida = 8;
-
-//     let train_array_size = 100;
-//     let train_noise = 0.0;
-
-//     let test_array_size = 10;
-//     let test_noise = train_noise;
-
-//     // Generate train x and y values
-//     let xy_train: Vec<(Vec<Vec<usize>>, usize)> = (0..train_array_size)
-//         .map(|_| {
-//             let vbar_num = random_range(0..y_len);
-
-//             // return the tuple
-//             (
-//                 gen_random_vbar_array(x_len, y_len, vbar_num, train_noise),
-//                 vbar_num,
-//             )
-//         })
-//         .collect();
-
-//     // Generate test x and y values
-//     let xy_test: Vec<(Vec<Vec<usize>>, usize)> = (0..test_array_size)
-//         .map(|_| {
-//             let vbar_num = random_range(0..y_len);
-
-//             // return the tuple
-//             (
-//                 gen_random_vbar_array(x_len, y_len, vbar_num, test_noise),
-//                 vbar_num,
-//             )
-//         })
-//         .collect();
-
-//     let num_neuronios_entrada = x_len*y_len;
-
-//     let rede = RedeNeuronal::iniciar(, Phi::Sigmoide);
-// }
