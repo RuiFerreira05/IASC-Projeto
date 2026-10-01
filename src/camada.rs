@@ -126,13 +126,17 @@ impl Camada {
         }
     }
 
-    pub fn adaptar(&mut self, delta: &[f64], y_anterior: &[f64], alpha: f64) {
+    pub fn adaptar(&mut self, delta: &[f64], y_anterior: &[f64], alpha: f64, beta: f64) {
         match self {
             Camada::Entrada { .. } => {}
-            Camada::Densa { neuronios, .. } => neuronios
-                .iter_mut()
-                .zip(delta)
-                .for_each(|(neuronio_j, delta_j)| neuronio_j.adaptar(*delta_j, y_anterior, alpha)),
+            Camada::Densa { neuronios, .. } => {
+                neuronios
+                    .iter_mut()
+                    .zip(delta)
+                    .for_each(|(neuronio_j, delta_j)| {
+                        neuronio_j.adaptar(*delta_j, y_anterior, alpha, beta)
+                    })
+            }
         }
     }
 }

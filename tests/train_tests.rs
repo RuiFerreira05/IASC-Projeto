@@ -35,7 +35,7 @@ fn test_retropropagar_single_step_analytical() {
     let delta_saida = RedeNeuronal::delta_saida(&y_pred, &target);
     let alpha = 0.1;
 
-    rede.retropropagar(&delta_saida, alpha);
+    rede.retropropagar(&delta_saida, alpha, 0.0);
 
     // Derivada: y * (1 - y)
     let y_derivada = expected_y * (1.0 - expected_y);
@@ -58,10 +58,10 @@ fn test_adaptar_reduces_error() {
     let x = [1.0, 1.0];
     let y = [1.0];
 
-    let eps1 = rede.adaptar(&x, &y, 0.5);
+    let eps1 = rede.adaptar(&x, &y, 0.5, 0.0);
     let mut last_eps = eps1;
     for _ in 0..50 {
-        last_eps = rede.adaptar(&x, &y, 0.5);
+        last_eps = rede.adaptar(&x, &y, 0.5, 0.0);
     }
 
     assert!(
@@ -78,7 +78,7 @@ fn test_and_training() {
     let y: &[&[f64]] = &[&[0.0], &[0.0], &[0.0], &[1.0]];
 
     let mut rede = RedeNeuronal::iniciar(&[2, 1], Phi::Sigmoide);
-    rede.treinar(x, y, 10000, 0.01, 0.5);
+    rede.treinar(x, y, 10000, 0.01, 0.5, 0.0);
 
     let pred = rede.prever(x);
     assert!(
@@ -109,7 +109,7 @@ fn test_or_training() {
     let y: &[&[f64]] = &[&[0.0], &[1.0], &[1.0], &[1.0]];
 
     let mut rede = RedeNeuronal::iniciar(&[2, 1], Phi::Sigmoide);
-    rede.treinar(x, y, 10000, 0.01, 0.5);
+    rede.treinar(x, y, 10000, 0.01, 0.5, 0.0);
 
     let pred = rede.prever(x);
     assert!(
@@ -141,7 +141,7 @@ fn test_xor_training() {
 
     // XOR requer camada oculta não linear
     let mut rede = RedeNeuronal::iniciar(&[2, 4, 1], Phi::Sigmoide);
-    rede.treinar(x, y, 30000, 0.005, 0.5);
+    rede.treinar(x, y, 30000, 0.005, 0.5, 0.0);
 
     let pred = rede.prever(x);
     assert!(

@@ -24,6 +24,12 @@ pub struct Neuronio {
     /// pendor
     pub b: f64,
 
+    /// vetor de variação dos pesos
+    pub delta_w: Vec<f64>,
+
+    /// Variação do pendor
+    pub delta_b: f64,
+
     /// soma de ativação
     pub h: f64,
 
@@ -56,6 +62,8 @@ impl Neuronio {
             phi,
             w: w.to_vec(),
             b,
+            delta_w: vec![0.0; w.len()],
+            delta_b: 0.0,
             h: 0.0,
             y: 0.0,
             y_derivada: 0.0,
@@ -96,18 +104,31 @@ impl Neuronio {
      * * O vetor de saida da camada anterior
      * * a taxa de aprendizagem
      */
-    pub fn adaptar(&mut self, delta: f64, y_anterior: &[f64], alpha: f64) {
-        let escalar = -alpha * self.y_derivada * delta;
+    pub fn adaptar(&mut self, propagacao_erro: f64, y_anterior: &[f64], alpha: f64, beta: f64) {
+        // Calcular momento dos pesos
+        let m_w: Vec<f64> = self.delta_w.iter().map(|w| beta * w).collect();
+
+        // Calcular variação dos pesos
+        let escalar = -alpha * self.y_derivada * propagacao_erro;
+        let delta_w: Vec<f64> = y_anterior
+            .iter()
+            .zip(m_w)
+            .map(|(&py, momento)| escalar * py + momento)
+            .collect();
 
         // Atualizar pesos
-        let weight_var: Vec<f64> = y_anterior.iter().map(|&py| escalar * py).collect();
         self.w
             .iter_mut()
-            .zip(weight_var)
-            .for_each(|(w, w_var)| *w += w_var);
+            .zip(&delta_w)
+            .for_each(|(w, var_w)| *w += var_w);
+        self.delta_w = delta_w;
+
+        // Calcular momento do pendor
+        let m_b = beta * self.delta_b;
 
         // Atualizar pendor
-        let b_var: f64 = escalar;
+        let b_var: f64 = escalar + m_b;
         self.b += b_var;
+        self.delta_b = b_var;
     }
 }

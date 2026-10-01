@@ -102,7 +102,7 @@ impl RedeNeuronal {
         y_n.iter().zip(y).map(|(yk_n, yk)| yk_n - yk).collect()
     }
 
-    pub fn retropropagar(&mut self, delta_saida: &[f64], alpha: f64) {
+    pub fn retropropagar(&mut self, delta_saida: &[f64], alpha: f64, beta: f64) {
         let mut delta_n = delta_saida.to_vec();
         for n in (1..self.camadas.len()).rev() {
             let y_anterior = self.camadas[n - 1].y();
@@ -121,17 +121,17 @@ impl RedeNeuronal {
                 delta_anterior[i] = soma;
             }
 
-            self.camadas[n].adaptar(delta_n.as_slice(), &y_anterior, alpha);
+            self.camadas[n].adaptar(delta_n.as_slice(), &y_anterior, alpha, beta);
 
             delta_n = delta_anterior;
         }
     }
 
-    pub fn adaptar(&mut self, x: &[f64], y: &[f64], alpha: f64) -> f64 {
+    pub fn adaptar(&mut self, x: &[f64], y: &[f64], alpha: f64, beta: f64) -> f64 {
         let y_n = self.propagar(x);
         let delta_n = RedeNeuronal::delta_saida(&y_n, y);
 
-        self.retropropagar(&delta_n, alpha);
+        self.retropropagar(&delta_n, alpha, beta);
         let k = delta_n.len();
         let epsilon: f64 = delta_n
             .iter()
@@ -149,6 +149,7 @@ impl RedeNeuronal {
         n_epocas: usize,
         epsilon_max: f64,
         alpha: f64,
+        beta: f64,
     ) {
         assert_eq!(
             x.len(),
@@ -160,7 +161,7 @@ impl RedeNeuronal {
             let mut epsilon = 0.0;
 
             for (&x_set, &y_set) in x.iter().zip(y) {
-                let epsilon_x = self.adaptar(x_set, y_set, alpha);
+                let epsilon_x = self.adaptar(x_set, y_set, alpha, beta);
                 epsilon = f64::max(epsilon, epsilon_x);
             }
 
