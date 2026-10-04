@@ -126,6 +126,9 @@ impl Camada {
         }
     }
 
+    /**
+     * A seguinte função pretende adaptar a camada usando retropropagação, chamando para esse efeito a função de adaptar em cada neurónio que a compõe
+     */
     pub fn adaptar(&mut self, delta: &[f64], y_anterior: &[f64], alpha: f64) {
         match self {
             Camada::Entrada { .. } => {}

@@ -102,8 +102,13 @@ impl RedeNeuronal {
         y_n.iter().zip(y).map(|(yk_n, yk)| yk_n - yk).collect()
     }
 
+    /**
+     * A seguinte função aplica mudanças em cada camada da rede com base na retropropagação do erro da saida da rede para todos as camadas anteriores
+     */
     pub fn retropropagar(&mut self, delta_saida: &[f64], alpha: f64) {
         let mut delta_n = delta_saida.to_vec();
+
+        // iterar sob as camadas ao contrário
         for n in (1..self.camadas.len()).rev() {
             let y_anterior = self.camadas[n - 1].y();
             let dimensao_anterior = self.camadas[n - 1].ds();
@@ -127,10 +132,18 @@ impl RedeNeuronal {
         }
     }
 
+    /**
+     * A seguinte função adapta a rede, aplicando um x determinado, e comparando o resultado da rede com um y.
+     * O erro calculado entre ambos estes vetores é depois retropropagado pelas camadas da rede através da função "retropropagar".
+     * A função retorna um valor, epsilon, que representa a aproximação do y obtido pela rede, ao y esperado
+     */
     pub fn adaptar(&mut self, x: &[f64], y: &[f64], alpha: f64) -> f64 {
         let y_n = self.propagar(x);
+
+        // calcular a diferença entre o y obtido e o y esperado
         let delta_n = RedeNeuronal::delta_saida(&y_n, y);
 
+        // retropropagar a diferença/erro
         self.retropropagar(&delta_n, alpha);
         let k = delta_n.len();
         let epsilon: f64 = delta_n
@@ -142,6 +155,15 @@ impl RedeNeuronal {
         epsilon
     }
 
+    /**
+     * A seguinte função pretende treinar a rede com base em um conjunto de dados de treino cujo resultado é conhecido (aprendizagem supervisionada)
+     * Aceita os seguintes parâmetros:
+     * * x: dados de treino
+     * * y: resultado esperado para cada dados de treino
+     * * n_epocas: iterações maximas de aprendizagem (retropropagação)
+     * * epsilon_max: Diferença minima da rede até estar considerada treinada
+     * * alpha: fator de arendizagem
+     */
     pub fn treinar(
         &mut self,
         x: &[&[f64]],

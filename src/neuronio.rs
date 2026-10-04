@@ -92,7 +92,7 @@ impl Neuronio {
 
     /**
      * A seguinte função adapta os pesos do neurónio com base em:
-     * * Um componente de propagação do erro na saida do neurónio, delta
+     * * Um componente de propagação do erro na saida do neurónio
      * * O vetor de saida da camada anterior
      * * a taxa de aprendizagem
      */
