@@ -2,6 +2,7 @@
 name = "projeto"
 version = "0.1.0"
 edition = "2024"
+author = "Rui Ferreira"
 
 [dependencies]
 rand = "0.10.2"

@@ -11,11 +11,24 @@ A biblioteca expõe quatro módulos principais através de `src/lib.rs`:
 - **`camada`**: Modela a arquitetura das camadas através do enum `Camada`, com variantes para camada de entrada (`Entrada`) e camada densa totalmente ligada (`Densa`). É responsável pela orquestração dos neurónios e pela propagação de vetores a nível de camada.
 - **`rede`**: Modela a estrutura global da rede neuronal multicamada através do struct `RedeNeuronal`, encadeando uma sequência de camadas (`Vec<Camada>`). Suporta inicialização automática por topologia (`iniciar`), inicialização manual com parâmetros pré-definidos (`iniciar_manual`), propagação direta (`propagar`) e previsões em lote (`prever`).
 
+## Como verificar o funcionamento
+O funcionamento da biblioteca pode ser verificado através do entrypoint `main.rs` que já consta de um ficheiro executável compilado com perfil de release na pasta `target/release/` para windows (`projeto.exe`) e linux (`projeto`).
+Para execução em linux irá ser necessário dar as permissões de execução ao ficheiro com:
+
+```bash
+chmod +x projeto
+```
+
 ## Como correr os modulos de teste
 
-Para realizar build da biblioteca é necessário o toolchain rust disponibilizado pelo rustc.
-Com o toolchain presente no computador. Basta correr o comando abaixo para executar o modulo de testes presente em `tests/logic_gate_tests`:
+Para realizar build da biblioteca é necessário o toolchain rust disponibilizado pela package "rustup", ou instalado separadamente.
+Com o toolchain presente no computador, basta correr o comando abaixo para executar os módulos de testes presentes em `tests/`:
 
 ```bash
 cargo test
 ```
+
+## Uso de IA
+
+IA foi utilizada para a geração das suites de testes, mais especificamente, nas suites de teste presentes dentro no folder `tests/`.
+A implementação da biblioteca não teve qualquer suporte de Inteligência Artificial generativa e o código que compõe a lógica da biblioteca é 100% humano.
