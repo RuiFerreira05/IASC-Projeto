@@ -310,7 +310,7 @@ fn imprimir_relatorio(relatorio: &RelatorioAvaliacao) {
         print!("  {:^3} ", c);
     }
     println!("|  Total");
-    println!("-------------+---------------------------------------------------+-------");
+    println!("-------------+------------------------------------------------------------+-------");
 
     for r in 0..10 {
         print!("      {:^6} |", r);
@@ -324,7 +324,7 @@ fn imprimir_relatorio(relatorio: &RelatorioAvaliacao) {
         }
         println!("| {:>6}", relatorio.total_por_digito[r]);
     }
-    println!("-------------+---------------------------------------------------+-------");
+    println!("-------------+------------------------------------------------------------+-------");
 }
 
 fn exemplo_mnist(config: Configuracao) {

@@ -32,6 +32,9 @@ Executar diretamente o executável pré-compilado presente da diretoria `target`
 - Para linux: `target\release\projeto`
 - Para Windows: `target\release\projeto.exe`
 
+## Exemplo da aplicação
+Um exemplo do output da aplicação pode ser encontrado em `OUTPUT_EXEMPLO.md`.
+
 ## Como configurar o exemplo
 
 Os parametros do exemplo são completamente configuraveis e podem ser alterados comentando a linha 24 do ficheiro `main.rs`, e descomentando a linha 7 a 22, editandos os campos do struct com os parametros desejados (Os campos já presentes representam os valores _default_ do metodo `padrao()`).
@@ -70,5 +73,6 @@ cargo doc
 ## Uso de IA
 
 IA foi utilizada para a geração da suites de testes presente em `tests/`.
-Adicionalmente, foi utilizado IA para a documentação da aplicação em `main.rs`.
+Adicionalmente, foi utilizado IA para a documentação da aplicação e melhoramento da apresentação dos resultados em `main.rs`.
+
 A implementação da biblioteca não teve qualquer suporte de Inteligência Artificial generativa e o código que compõe a lógica da biblioteca é 100% humano.
