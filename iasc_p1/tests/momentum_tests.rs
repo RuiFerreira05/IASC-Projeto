@@ -1,4 +1,4 @@
-use projeto::{camada::Camada, neuronio::Neuronio, phi::Phi, rede::RedeNeuronal};
+use iasc_p1::{camada::Camada, neuronio::Neuronio, phi::Phi, rede::RedeNeuronal};
 
 #[test]
 fn test_neuronio_momentum_analytical() {
@@ -110,10 +110,7 @@ fn test_beta_zero_equivalence() {
     }
 
     match (&rede_padrao.camadas[1], &rede_momento_zero.camadas[1]) {
-        (
-            Camada::Densa { neuronios: n1, .. },
-            Camada::Densa { neuronios: n2, .. },
-        ) => {
+        (Camada::Densa { neuronios: n1, .. }, Camada::Densa { neuronios: n2, .. }) => {
             assert!((n1[0].w[0] - n2[0].w[0]).abs() < 1e-12);
             assert!((n1[0].w[1] - n2[0].w[1]).abs() < 1e-12);
             assert!((n1[0].b - n2[0].b).abs() < 1e-12);

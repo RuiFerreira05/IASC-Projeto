@@ -1,4 +1,4 @@
-use projeto::{phi::Phi, rede::RedeNeuronal};
+use iasc_p1::{phi::Phi, rede::RedeNeuronal};
 use rand::random_range;
 
 fn gen_vbar_array(

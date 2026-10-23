@@ -1,4 +1,4 @@
-use projeto::{camada::Camada, phi::Phi, rede::RedeNeuronal};
+use iasc_p1::{camada::Camada, phi::Phi, rede::RedeNeuronal};
 
 #[test]
 fn test_delta_saida() {

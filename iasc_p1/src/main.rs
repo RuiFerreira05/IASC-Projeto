@@ -1,7 +1,7 @@
 use std::{path::Path, time::Instant};
 
+use iasc_p1::{phi::Phi, rede::RedeNeuronal};
 use mnist::{Mnist, MnistBuilder};
-use projeto::{phi::Phi, rede::RedeNeuronal};
 
 fn main() {
     // let config = Configuracao {

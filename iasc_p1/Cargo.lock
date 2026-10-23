@@ -47,6 +47,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "iasc-p1"
+version = "0.1.0"
+dependencies = [
+ "mnist",
+ "rand",
+]
+
+[[package]]
 name = "libc"
 version = "0.2.189"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -59,14 +67,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2126097226757059ceb317a872fb9e3b289e67af0ba2681b1e1cf389b763c260"
 dependencies = [
  "byteorder",
-]
-
-[[package]]
-name = "projeto"
-version = "0.1.0"
-dependencies = [
- "mnist",
- "rand",
 ]
 
 [[package]]
