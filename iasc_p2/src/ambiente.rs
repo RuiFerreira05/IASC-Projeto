@@ -1,4 +1,4 @@
-/**
+/*!
 Representação do ambiente e dos elementos fundamentais do ciclo de interação em Aprendizagem por Reforço.
 
 No paradigma da aprendizagem por reforço, a resolução de um problema de decisão sequencial

@@ -25,12 +25,12 @@ Ciclo de Controlo do Algoritmo SARSA (por Episódio):
 1. Iniciar o ambiente e obter o estado inicial: s = ambiente.iniciar().
 2. Selecionar a ação inicial com base na política: a = selecionar_acao(s).
 3. Repetir por cada passo até atingir um estado terminal:
-   a. Executar a ação a no ambiente, observando o novo estado s', a recompensa instantânea r
-      e o indicador de terminação final.
-   b. Selecionar a próxima ação a' para o estado s' utilizando a mesma política: a' = selecionar_acao(s').
-   c. Executar o passo de aprendizagem: aprender(s, a, r, s', a', final).
-   d. Se o estado s' for terminal, terminar o episódio.
-   e. Caso contrário, transitar de estado e ação: s ← s', a ← a'.
+   - Executar a ação a no ambiente, observando o novo estado s', a recompensa instantânea r
+     e o indicador de terminação final.
+   - Selecionar a próxima ação a' para o estado s' utilizando a mesma política: a' = selecionar_acao(s').
+   - Executar o passo de aprendizagem: aprender(s, a, r, s', a', final).
+   - Se o estado s' for terminal, terminar o episódio.
+   - Caso contrário, transitar de estado e ação: s ← s', a ← a'.
 */
 pub struct Agente {
     /// Memória de aprendizagem tabular que armazena a função de valor Q(s, a).

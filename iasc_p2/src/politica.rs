@@ -19,7 +19,7 @@ entre exploração e aproveitamento (Exploration vs. Exploitation):
 - Aproveitamento (Exploitation): O agente seleciona a ação identificada como sendo a melhor
   segundo o conhecimento adquirido até ao momento (ação sôfrega ou greedy), com o intuito
   de maximizar o retorno imediato e futuro acumulado:
-      a* = argmax_a Q(s, a)
+  a* = argmax_a Q(s, a)
 
 Estratégia ε-greedy:
 Para gerir este compromisso, a estratégia ε-greedy estabelece um mecanismo estocástico

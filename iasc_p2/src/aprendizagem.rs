@@ -13,7 +13,7 @@ que opera em regime "On-Policy":
   do retorno futuro. O agente aprende o valor da política que está efetivamente a executar,
   incluindo o custo das ações exploratórias.
 - Amostragem da Experiência: Cada passo de aprendizagem baseia-se na quíntupla de transição:
-      s → a → r → s' → a'
+  s → a → r → s' → a'
   onde o agente no estado s executa a ação a, observa a recompensa r e o novo estado s',
   e escolhe a ação subsequente a' segundo a sua política atual.
 
@@ -31,10 +31,10 @@ onde:
 
 Retorno em Passos Contínuos vs. Estados Terminais:
 1. Passo com continuidade (estado s' não terminal):
-       J = r + γ * Q(s', a')
+   J = r + γ * Q(s', a')
    O retorno estimado combina a recompensa imediata r com o valor descontado da ação seguinte.
 2. Passo final (estado s' terminal):
-       J = r
+   J = r
    Nos estados terminais não existem ações seguintes possíveis; por conseguinte, o retorno
    futuro é nulo e o valor alvo depende exclusivamente da recompensa imediata r observada.
 
@@ -85,13 +85,13 @@ impl Sarsa {
     Etapas do processamento:
     1. Cálculo do retorno estimado (valor alvo J):
        - Se o passo for terminal (final == true):
-             J = r
+         J = r
        - Caso contrário (passo contínuo):
-             J = r + γ * Q(s', a')
+         J = r + γ * Q(s', a')
     2. Cálculo da nova estimativa de valor Q(s, a) por diferença temporal:
-             Q(s, a) = Q(s, a) + α * (J - Q(s, a))
+       Q(s, a) = Q(s, a) + α * (J - Q(s, a))
     3. Atualização do valor correspondente na memória de aprendizagem:
-             memoria.actualizar(s, a, Q(s, a))
+       memoria.actualizar(s, a, Q(s, a))
 
     Parâmetros:
     - s: Estado de partida da transição.
@@ -102,6 +102,7 @@ impl Sarsa {
     - final: Indicador booleano de estado terminal (fim de episódio).
     - memoria: Referência mutável para a memória de aprendizagem onde reside a tabela Q(s, a).
     */
+    #[allow(clippy::too_many_arguments)]
     pub fn aprender(
         &self,
         s: Estado,

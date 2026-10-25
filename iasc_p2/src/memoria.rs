@@ -11,12 +11,12 @@ e seguir a política de controlo daí em diante:
 
 Fundamentação Teórica:
 - Retorno Esperado: O retorno cumulativo descontado no tempo é dado por:
-      G(s, a) = r + γ * G(s', a')
+  G(s, a) = r + γ * G(s', a')
   sendo a função Q(s, a) a estimativa estatística desse retorno baseada nas amostras
   de experiência observadas pelo agente ao longo do tempo.
 - Representação Tabular: A memória mapeia explicitamente pares discretos (estado, acção)
   para valores reais:
-      Q : (S × A) → ℝ
+  Q : (S × A) → ℝ
 - Inicialização e Valor por Omissão: Para pares (s, a) que ainda não foram observados,
   a memória retorna um valor predefinido (valor_omissao). Valores iniciais neutros (0.0)
   representam ausência de conhecimento a priori; valores otimistas (positivos elevados)
