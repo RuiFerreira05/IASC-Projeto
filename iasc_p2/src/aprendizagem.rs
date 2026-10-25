@@ -3,16 +3,93 @@ use crate::{
     memoria::Memoria,
 };
 
+/**
+Implementação do algoritmo de aprendizagem por reforço SARSA (State-Action-Reward-State-Action).
+
+O SARSA é um método de controlo por Diferença Temporal (Temporal Difference - TD)
+que opera em regime "On-Policy":
+- Controlo On-Policy: Utiliza a mesma política (por exemplo, ε-greedy) tanto para selecionar
+  a ação executada no ambiente como para selecionar a próxima ação a' utilizada na estimativa
+  do retorno futuro. O agente aprende o valor da política que está efetivamente a executar,
+  incluindo o custo das ações exploratórias.
+- Amostragem da Experiência: Cada passo de aprendizagem baseia-se na quíntupla de transição:
+      s → a → r → s' → a'
+  onde o agente no estado s executa a ação a, observa a recompensa r e o novo estado s',
+  e escolhe a ação subsequente a' segundo a sua política atual.
+
+Regra de Atualização por Diferença Temporal (TD):
+A estimativa do valor de ação Q(s, a) é atualizada iterativamente corrigindo o valor anterior
+com base no erro de estimativa (diferença temporal):
+    Nova Estimativa ← Estimativa + α * (Retorno Estimado - Estimativa)
+    Q(s, a) ← Q(s, a) + α * (J - Q(s, a))
+
+onde:
+- J: Retorno estimado ou valor alvo (TD Target).
+- J - Q(s, a): Erro de estimativa ou erro da diferença temporal (TD Error).
+- α ∈ [0, 1]: Fator ou taxa de aprendizagem (learning rate).
+- γ ∈ [0, 1]: Fator de desconto temporal (discount factor).
+
+Retorno em Passos Contínuos vs. Estados Terminais:
+1. Passo com continuidade (estado s' não terminal):
+       J = r + γ * Q(s', a')
+   O retorno estimado combina a recompensa imediata r com o valor descontado da ação seguinte.
+2. Passo final (estado s' terminal):
+       J = r
+   Nos estados terminais não existem ações seguintes possíveis; por conseguinte, o retorno
+   futuro é nulo e o valor alvo depende exclusivamente da recompensa imediata r observada.
+
+Propriedades dos Parâmetros:
+- Fator de aprendizagem α:
+  - α → 0: Conserva as estimativas anteriores, conferindo maior relevância às experiências antigas.
+  - α → 1: Descarta o histórico anterior, conferindo relevância quase total à experiência mais recente.
+  - Em ambientes não estacionários, um valor fixo de α permite ponderar exponencialmente as recompensas no tempo.
+- Fator de desconto γ:
+  - γ = 0: Agente míope, otimizando apenas a recompensa imediata r.
+  - γ → 1: Agente com visão a longo prazo, atribuindo grande relevância às recompensas futuras diferidas no tempo.
+*/
 pub struct Sarsa {
+    /// Fator de aprendizagem α ∈ [0, 1], que determina a dimensão do ajuste efetuado na estimativa Q(s, a).
     alfa: f32,
+
+    /// Fator de desconto temporal γ ∈ [0, 1], que pondera a relevância das recompensas futuras.
     gama: f32,
 }
 
 impl Sarsa {
+    /**
+    Inicializa o algoritmo de aprendizagem SARSA com as taxas de aprendizagem e de desconto temporal especificadas.
+
+    Parâmetros:
+    - alfa: Fator de aprendizagem α ∈ [0, 1].
+    - gama: Fator de desconto temporal γ ∈ [0, 1].
+    */
     pub fn iniciar(alfa: f32, gama: f32) -> Self {
         Self { alfa, gama }
     }
 
+    /**
+    Executa um passo de atualização incremental da estimativa de valor Q(s, a) com base na experiência observada.
+
+    Etapas do processamento:
+    1. Cálculo do retorno estimado (valor alvo J):
+       - Se o passo for terminal (final == true):
+             J = r
+       - Caso contrário (passo contínuo):
+             J = r + γ * Q(s', a')
+    2. Cálculo da nova estimativa de valor Q(s, a) por diferença temporal:
+             Q(s, a) = Q(s, a) + α * (J - Q(s, a))
+    3. Atualização do valor correspondente na memória de aprendizagem:
+             memoria.actualizar(s, a, Q(s, a))
+
+    Parâmetros:
+    - s: Estado de partida da transição.
+    - a: Ação executada no estado s.
+    - r: Recompensa instantânea obtida com a transição.
+    - s_linha: Novo estado s' observado após a execução da ação a.
+    - a_linha: Próxima ação a' selecionada pela política no estado s_linha.
+    - final: Indicador booleano de estado terminal (fim de episódio).
+    - memoria: Referência mutável para a memória de aprendizagem onde reside a tabela Q(s, a).
+    */
     pub fn aprender(
         &self,
         s: Estado,

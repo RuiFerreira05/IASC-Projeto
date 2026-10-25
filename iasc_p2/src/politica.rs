@@ -8,15 +8,61 @@ use crate::{
     memoria::Memoria,
 };
 
+/**
+Representação da política de seleção de ação ε-greedy (epsilon-greedy).
+
+Em Aprendizagem por Reforço, o agente depara-se constantemente com o dilema fundamental
+entre exploração e aproveitamento (Exploration vs. Exploitation):
+- Exploração (Exploration): O agente seleciona ações alternativas com o objetivo de descobrir
+  novos estados e avaliar melhor ações cujas estimativas de recompensa sejam ainda incertas.
+  Permite acumular experiência e evitar a convergência prematura para políticas subótimas.
+- Aproveitamento (Exploitation): O agente seleciona a ação identificada como sendo a melhor
+  segundo o conhecimento adquirido até ao momento (ação sôfrega ou greedy), com o intuito
+  de maximizar o retorno imediato e futuro acumulado:
+      a* = argmax_a Q(s, a)
+
+Estratégia ε-greedy:
+Para gerir este compromisso, a estratégia ε-greedy estabelece um mecanismo estocástico
+regulado pelo parâmetro ε ∈ [0, 1] (probabilidade de exploração):
+- Com probabilidade 1 - ε: Realiza aproveitamento do conhecimento, selecionando a ação sôfrega
+  a* com maior estimativa de valor Q(s, a) (ação greedy).
+- Com probabilidade ε: Realiza exploração do ambiente, selecionando uma ação aleatória
+  uniformemente distribuída entre todas as ações admissíveis (at ≠ a* em geral).
+
+Tratamento de Empates (Tie-breaking):
+Quando múltiplas ações partilham o mesmo valor máximo de Q(s, a), a política baralha previamente
+as ações candidatas (shuffle), assegurando um desempate aleatório não tendencioso.
+*/
 pub struct Greedy {
+    /// Probabilidade de exploração ε ∈ [0, 1], definindo a frequência com que o agente escolhe ações aleatórias.
     epsilon: f32,
 }
 
 impl Greedy {
+    /**
+    Inicializa a política de seleção de ação ε-greedy com a probabilidade de exploração epsilon.
+
+    Parâmetros:
+    - epsilon: Valor real no intervalo [0, 1] que dita a probabilidade de tomar uma ação exploratória.
+      - epsilon = 0.0: Política puramente sôfrega (apenas aproveitamento, sem exploração).
+      - epsilon = 1.0: Política puramente aleatória (apenas exploração).
+    */
     pub fn iniciar(epsilon: f32) -> Self {
         Self { epsilon }
     }
 
+    /**
+    Seleciona a ação a executar no estado s de acordo com a regra ε-greedy.
+
+    Etapas do algoritmo de decisão:
+    1. Gera um número aleatório uniforme no intervalo [0, 1].
+    2. Se random() > ε:
+       - Seleciona a ação sôfrega através de `accao_sofrega(s, accoes, memoria)` (aproveitamento).
+    3. Caso contrário (random() <= ε):
+       - Seleciona uma ação aleatória através de `accao_exploracao(accoes)` (exploração).
+
+    Retorna a ação selecionada.
+    */
     pub fn selecionar_acao(&self, s: &Estado, accoes: &[Acao], memoria: &Memoria) -> Acao {
         if random_range(0.0..=1.0) > self.epsilon {
             Self::accao_sofrega(s, accoes, memoria)
@@ -25,6 +71,15 @@ impl Greedy {
         }
     }
 
+    /**
+    Identifica e retorna a ação sôfrega (greedy) para o estado s: a* = argmax_a Q(s, a).
+
+    Mecanismo de desempate:
+    1. Cria uma cópia da lista de ações admissíveis e baralha-a aleatoriamente (shuffle).
+    2. Itera sobre as ações baralhadas e encontra a ação que maximiza a estimativa Q(s, a).
+       Desta forma, caso existam várias ações com valor idêntico ao máximo, a escolha entre elas
+       é estocasticamente uniforme e isenta de enviesamento de ordem.
+    */
     pub fn accao_sofrega(s: &Estado, accoes: &[Acao], memoria: &Memoria) -> Acao {
         let mut candidates = accoes.to_vec();
         candidates.shuffle(&mut rand::rng());
@@ -43,6 +98,12 @@ impl Greedy {
         argmax
     }
 
+    /**
+    Seleciona uma ação exploratória aleatória a partir do conjunto de ações admissíveis.
+
+    Realiza uma amostragem uniforme sobre o vetor de ações, permitindo ao agente
+    obter nova experiência e descobrir transições de estados ainda inexploradas.
+    */
     pub fn accao_exploracao(accoes: &[Acao]) -> Acao {
         let mut rng = rand::rng();
         *accoes
