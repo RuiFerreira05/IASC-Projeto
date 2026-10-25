@@ -71,6 +71,26 @@ impl Agente {
     }
 
     /**
+    Inicializa um agente de aprendizagem por reforço com configurações padrão de referência.
+
+    Configurações predefinidas dos componentes:
+    - Memória: `Memoria::iniciar_default()` (com valor por omissão neutro 0.0);
+    - Política: `Greedy::iniciar_default()` (estratégia ε-greedy com probabilidade de exploração ε = 0.1);
+    - Algoritmo de aprendizagem: `Sarsa::iniciar_default()` (taxa de aprendizagem α = 0.1 e desconto temporal γ = 0.9).
+
+    Parâmetros:
+    - accoes: Vetor de ações admissíveis no ambiente.
+    */
+    pub fn iniciar_default(accoes: Vec<Acao>) -> Self {
+        Self::iniciar(
+            Memoria::iniciar_default(),
+            Greedy::iniciar_default(),
+            Sarsa::iniciar_default(),
+            accoes,
+        )
+    }
+
+    /**
     Seleciona uma ação para o estado s através da política de decisão do agente e do conhecimento na memória.
     */
     pub fn selecionar_acao(&self, s: &Estado) -> Acao {
@@ -138,6 +158,13 @@ mod tests {
             let terminal = self.estado >= 2;
             (Estado::from(self.estado.to_string()), 1.0, terminal)
         }
+    }
+
+    #[test]
+    fn test_agente_iniciar_default() {
+        let accoes = vec![Acao(0), Acao(1)];
+        let agente = Agente::iniciar_default(accoes.clone());
+        assert_eq!(agente.accoes, accoes);
     }
 
     #[test]

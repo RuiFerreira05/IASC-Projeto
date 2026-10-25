@@ -52,6 +52,17 @@ impl Greedy {
     }
 
     /**
+    Inicializa a política ε-greedy com o valor de exploração predefinido (ε = 0.1).
+
+    O valor ε = 0.1 é amplamente utilizado na literatura de aprendizagem por reforço
+    (Sutton & Barto, 2020) por estabelecer um compromisso equilibrado e robusto
+    entre a exploração de novas ações e o aproveitamento do conhecimento já adquirido.
+    */
+    pub fn iniciar_default() -> Self {
+        Self::iniciar(0.1)
+    }
+
+    /**
     Seleciona a ação a executar no estado s de acordo com a regra ε-greedy.
 
     Etapas do algoritmo de decisão:
@@ -115,6 +126,12 @@ impl Greedy {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_iniciar_default() {
+        let politica = Greedy::iniciar_default();
+        assert_eq!(politica.epsilon, 0.1);
+    }
 
     #[test]
     fn test_accao_sofrega_escolhe_maior_q() {

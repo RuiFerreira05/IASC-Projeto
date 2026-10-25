@@ -64,3 +64,25 @@ fn test_sarsa_aprendizagem() {
         q_esq_em_0
     );
 }
+
+#[test]
+fn test_sarsa_aprendizagem_com_agente_default() {
+    let mut env = LinhaMundo::new(3);
+    let accoes = vec![LinhaMundo::ESQ, LinhaMundo::DIR];
+
+    let mut agente = Agente::iniciar_default(accoes);
+
+    for _ in 0..300 {
+        agente.treinar_episodio(&mut env);
+    }
+
+    let q_dir_em_0 = agente.memoria.q(&Estado::from("0"), LinhaMundo::DIR);
+    let q_esq_em_0 = agente.memoria.q(&Estado::from("0"), LinhaMundo::ESQ);
+
+    assert!(
+        q_dir_em_0 > q_esq_em_0,
+        "O agente default deve aprender a mover-se para a direita (Q_dir: {}, Q_esq: {})",
+        q_dir_em_0,
+        q_esq_em_0
+    );
+}

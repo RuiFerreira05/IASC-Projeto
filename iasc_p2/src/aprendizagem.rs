@@ -68,6 +68,18 @@ impl Sarsa {
     }
 
     /**
+    Inicializa o algoritmo SARSA com os hiperparâmetros predefinidos (α = 0.1 e γ = 0.9).
+
+    Configuração padrão de referência:
+    - α = 0.1: Taxa de aprendizagem moderada que assegura atualizações estáveis da função Q(s, a).
+    - γ = 0.9: Fator de desconto temporal que assegura uma visão a longo prazo na consideração
+      dos retornos futuros diferidos.
+    */
+    pub fn iniciar_default() -> Self {
+        Self::iniciar(0.1, 0.9)
+    }
+
+    /**
     Executa um passo de atualização incremental da estimativa de valor Q(s, a) com base na experiência observada.
 
     Etapas do processamento:
@@ -114,6 +126,13 @@ impl Sarsa {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_iniciar_default() {
+        let sarsa = Sarsa::iniciar_default();
+        assert_eq!(sarsa.alfa, 0.1);
+        assert_eq!(sarsa.gama, 0.9);
+    }
 
     #[test]
     fn test_aprender_passo_nao_terminal() {
