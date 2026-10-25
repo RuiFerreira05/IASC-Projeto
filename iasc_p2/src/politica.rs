@@ -50,3 +50,68 @@ impl Greedy {
             .expect("A lista de acções não pode estar vazia")
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_accao_sofrega_escolhe_maior_q() {
+        let mut mem = Memoria::iniciar_default();
+        let s = Estado::from("s0");
+        let a0 = Acao(0);
+        let a1 = Acao(1);
+        let a2 = Acao(2);
+
+        mem.actualizar(s.clone(), a0, 1.0);
+        mem.actualizar(s.clone(), a1, 5.0);
+        mem.actualizar(s.clone(), a2, 2.0);
+
+        let accoes = vec![a0, a1, a2];
+        let escolhida = Greedy::accao_sofrega(&s, &accoes, &mem);
+        assert_eq!(escolhida, a1);
+    }
+
+    #[test]
+    fn test_accao_sofrega_valores_negativos() {
+        let mut mem = Memoria::iniciar_default();
+        let s = Estado::from("s0");
+        let a0 = Acao(0);
+        let a1 = Acao(1);
+
+        mem.actualizar(s.clone(), a0, -10.0);
+        mem.actualizar(s.clone(), a1, -2.0);
+
+        let accoes = vec![a0, a1];
+        let escolhida = Greedy::accao_sofrega(&s, &accoes, &mem);
+        assert_eq!(escolhida, a1);
+    }
+
+    #[test]
+    fn test_accao_exploracao_retorna_acao_valida() {
+        let a0 = Acao(0);
+        let a1 = Acao(1);
+        let accoes = vec![a0, a1];
+
+        let escolhida = Greedy::accao_exploracao(&accoes);
+        assert!(accoes.contains(&escolhida));
+    }
+
+    #[test]
+    fn test_selecionar_acao_epsilon_zero_sempre_sofrega() {
+        let mut mem = Memoria::iniciar_default();
+        let s = Estado::from("s0");
+        let a0 = Acao(0);
+        let a1 = Acao(1);
+
+        mem.actualizar(s.clone(), a0, 0.0);
+        mem.actualizar(s.clone(), a1, 10.0);
+
+        let politica = Greedy::iniciar(0.0);
+        let accoes = vec![a0, a1];
+
+        for _ in 0..20 {
+            assert_eq!(politica.selecionar_acao(&s, &accoes, &mem), a1);
+        }
+    }
+}

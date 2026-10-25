@@ -59,3 +59,59 @@ impl Agente {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    struct MockAmbienteCurto {
+        estado: i32,
+    }
+
+    impl Ambiente for MockAmbienteCurto {
+        fn iniciar(&mut self) -> Estado {
+            self.estado = 0;
+            Estado::from("0")
+        }
+
+        fn passo(&mut self, _a: Acao) -> (Estado, f32, bool) {
+            self.estado += 1;
+            let terminal = self.estado >= 2;
+            (Estado::from(self.estado.to_string()), 1.0, terminal)
+        }
+    }
+
+    #[test]
+    fn test_agente_selecionar_acao() {
+        let mut mem = Memoria::iniciar_default();
+        let s0 = Estado::from("0");
+        let a0 = Acao(0);
+        let a1 = Acao(1);
+
+        mem.actualizar(s0.clone(), a1, 10.0);
+
+        let politica = Greedy::iniciar(0.0); // 100% guloso
+        let sarsa = Sarsa::iniciar(0.1, 0.9);
+        let agente = Agente::iniciar(mem, politica, sarsa, vec![a0, a1]);
+
+        assert_eq!(agente.selecionar_acao(&s0), a1);
+    }
+
+    #[test]
+    fn test_agente_treinar_episodio_atualiza_memoria() {
+        let mem = Memoria::iniciar_default();
+        let politica = Greedy::iniciar(0.0);
+        let sarsa = Sarsa::iniciar(0.5, 0.9);
+        let accoes = vec![Acao(0)];
+
+        let mut agente = Agente::iniciar(mem, politica, sarsa, accoes);
+        let mut env = MockAmbienteCurto { estado: 0 };
+
+        agente.treinar_episodio(&mut env);
+
+        // O ambiente executou 2 passos até terminal:
+        // Estado 0 e Estado 1 foram visitados e atualizados na memória.
+        let q_s0 = agente.memoria.q(&Estado::from("0"), Acao(0));
+        assert!(q_s0 > 0.0);
+    }
+}
