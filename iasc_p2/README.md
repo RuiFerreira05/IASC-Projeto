@@ -2,6 +2,8 @@
 
 Implementação de uma biblioteca de aprendizagem por reforço (*Reinforcement Learning*) baseada em métodos de Diferença Temporal (*Temporal Difference* - TD) e controlo *on-policy* (algoritmo SARSA) em Rust, desenvolvida no âmbito da unidade curricular de Inteligência Artificial e Sistemas Cognitivos (Mestrado).
 
+*Repositório Github:* https://github.com/RuiFerreira05/IASC-Projeto
+
 ## Módulos Expostos
 
 A biblioteca expõe cinco módulos principais através de `src/lib.rs`:
