@@ -110,10 +110,10 @@ impl Sarsa {
         r: f32,
         s_linha: Estado,
         a_linha: Acao,
-        r#final: bool,
+        fim: bool,
         memoria: &mut Memoria,
     ) {
-        let j = if r#final {
+        let j = if fim {
             r
         } else {
             r + self.gama * memoria.q(&s_linha, a_linha)

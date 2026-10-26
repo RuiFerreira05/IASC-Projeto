@@ -153,7 +153,7 @@ impl Ambiente for MundoGrelha2D {
 
         let atingiu_meta = self.pos == self.meta;
         let esgotou_passos = self.passos_atuais >= self.max_passos;
-        let r#final = atingiu_meta || esgotou_passos;
+        let fim = atingiu_meta || esgotou_passos;
 
         // Penalização por passo (-1.0) para incentivar o caminho mais curto; +100.0 ao alcançar a meta
         let recompensa = if atingiu_meta { 100.0 } else { -1.0 };
@@ -162,7 +162,7 @@ impl Ambiente for MundoGrelha2D {
         self.ultimo_episodio_recompensa += recompensa;
         self.ultimo_episodio_meta_atingida = atingiu_meta;
 
-        (Self::coords_para_estado(self.pos), recompensa, r#final)
+        (Self::coords_para_estado(self.pos), recompensa, fim)
     }
 }
 
@@ -198,7 +198,7 @@ fn obter_trajetoria_otima(agente: &Agente, config: &Configuracao) -> Vec<PassoTr
         let a = Greedy::accao_sofrega(&s, &agente.accoes, &agente.memoria);
         let q_val = agente.memoria.q(&s, a);
 
-        let (s_prox, r, r#final) = env.passo(a);
+        let (s_prox, r, fim) = env.passo(a);
         passos += 1;
 
         trajetoria.push(PassoTrajetoria {
@@ -211,7 +211,7 @@ fn obter_trajetoria_otima(agente: &Agente, config: &Configuracao) -> Vec<PassoTr
         });
 
         s = s_prox;
-        if r#final {
+        if fim {
             break;
         }
     }

@@ -116,7 +116,7 @@ impl Agente {
         let mut a = self.selecionar_acao(&s);
 
         loop {
-            let (s_linha, r, r#final) = ambiente.passo(a);
+            let (s_linha, r, fim) = ambiente.passo(a);
             let a_linha = self.selecionar_acao(&s_linha);
 
             self.algoritmo_aprendizagem.aprender(
@@ -125,11 +125,11 @@ impl Agente {
                 r,
                 s_linha.clone(),
                 a_linha,
-                r#final,
+                fim,
                 &mut self.memoria,
             );
 
-            if r#final {
+            if fim {
                 break;
             }
 
