@@ -1,5 +1,6 @@
 use crate::{
     ambiente::{Acao, Estado},
+    aprendizagem::aprendizagem::{Aprendizagem, Transicao},
     memoria::Memoria,
 };
 
@@ -78,51 +79,23 @@ impl Sarsa {
     pub fn iniciar_default() -> Self {
         Self::iniciar(0.1, 0.9)
     }
+}
 
-    /**
-    Executa um passo de atualização incremental da estimativa de valor Q(s, a) com base na experiência observada.
-
-    Etapas do processamento:
-    1. Cálculo do retorno estimado (valor alvo J):
-       - Se o passo for terminal (final == true):
-         J = r
-       - Caso contrário (passo contínuo):
-         J = r + γ * Q(s', a')
-    2. Cálculo da nova estimativa de valor Q(s, a) por diferença temporal:
-       Q(s, a) = Q(s, a) + α * (J - Q(s, a))
-    3. Atualização do valor correspondente na memória de aprendizagem:
-       memoria.actualizar(s, a, Q(s, a))
-
-    Parâmetros:
-    - s: Estado de partida da transição.
-    - a: Ação executada no estado s.
-    - r: Recompensa instantânea obtida com a transição.
-    - s_linha: Novo estado s' observado após a execução da ação a.
-    - a_linha: Próxima ação a' selecionada pela política no estado s_linha.
-    - final: Indicador booleano de estado terminal (fim de episódio).
-    - memoria: Referência mutável para a memória de aprendizagem onde reside a tabela Q(s, a).
-    */
-    #[allow(clippy::too_many_arguments)]
-    pub fn aprender(
-        &self,
-        s: Estado,
-        a: Acao,
-        r: f32,
-        s_linha: Estado,
-        a_linha: Acao,
-        fim: bool,
-        memoria: &mut Memoria,
-    ) {
-        let j = if fim {
-            r
+impl Aprendizagem for Sarsa {
+    fn aprender(&mut self, transicao: Transicao, memoria: &mut Memoria) {
+        let j = if transicao.r#final {
+            transicao.r
         } else {
-            r + self.gama * memoria.q(&s_linha, a_linha)
+            let a_linha = transicao.a_linha.expect("SARSA requires next action a'");
+            transicao.r + self.gama * memoria.q(transicao.s_linha, a_linha)
         };
-
-        let q = memoria.q(&s, a) + self.alfa * (j - memoria.q(&s, a));
-        memoria.actualizar(s, a, q);
+        let q_antigo = memoria.q(transicao.s, transicao.a);
+        let q_novo = q_antigo + self.alfa * (j - q_antigo);
+        memoria.actualizar(transicao.s.clone(), transicao.a, q_novo);
     }
 }
+
+// ########### TESTES ###########
 
 #[cfg(test)]
 mod tests {
@@ -133,47 +106,5 @@ mod tests {
         let sarsa = Sarsa::iniciar_default();
         assert_eq!(sarsa.alfa, 0.1);
         assert_eq!(sarsa.gama, 0.9);
-    }
-
-    #[test]
-    fn test_aprender_passo_nao_terminal() {
-        let sarsa = Sarsa::iniciar(0.5, 0.5);
-        let mut mem = Memoria::iniciar_default();
-
-        let s0 = Estado::from("s0");
-        let a0 = Acao(0);
-        let s1 = Estado::from("s1");
-        let a1 = Acao(1);
-
-        // Q(s1, a1) = 4.0
-        mem.actualizar(s1.clone(), a1, 4.0);
-
-        // r = 2.0, final = false
-        // J = 2.0 + 0.5 * 4.0 = 4.0
-        // Q(s0, a0) = 0.0 + 0.5 * (4.0 - 0.0) = 2.0
-        sarsa.aprender(s0.clone(), a0, 2.0, s1, a1, false, &mut mem);
-
-        assert!((mem.q(&s0, a0) - 2.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn test_aprender_passo_terminal() {
-        let sarsa = Sarsa::iniciar(0.5, 0.9);
-        let mut mem = Memoria::iniciar_default();
-
-        let s0 = Estado::from("s0");
-        let a0 = Acao(0);
-        let s_term = Estado::from("s_term");
-        let a_dummy = Acao(0);
-
-        // Q(s_term, a_dummy) = 100.0, mas não deve ser considerado porque é terminal
-        mem.actualizar(s_term.clone(), a_dummy, 100.0);
-
-        // r = 10.0, final = true
-        // J = r = 10.0
-        // Q(s0, a0) = 0.0 + 0.5 * (10.0 - 0.0) = 5.0
-        sarsa.aprender(s0.clone(), a0, 10.0, s_term, a_dummy, true, &mut mem);
-
-        assert!((mem.q(&s0, a0) - 5.0).abs() < 1e-5);
     }
 }

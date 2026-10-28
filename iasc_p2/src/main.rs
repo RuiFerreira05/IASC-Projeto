@@ -3,7 +3,7 @@ use std::{collections::HashSet, time::Instant};
 use iasc_p2::{
     agente::Agente,
     ambiente::{Acao, Ambiente, Estado},
-    aprendizagem::Sarsa,
+    aprendizagem::sarsa::Sarsa,
     memoria::Memoria,
     politica::greedy::Greedy,
 };
@@ -187,7 +187,10 @@ struct PassoTrajetoria {
 }
 
 // Recolhe a sequência completa de passos da trajetória ótima
-fn obter_trajetoria_otima(agente: &Agente<Greedy>, config: &Configuracao) -> Vec<PassoTrajetoria> {
+fn obter_trajetoria_otima(
+    agente: &Agente<Greedy, Sarsa>,
+    config: &Configuracao,
+) -> Vec<PassoTrajetoria> {
     let mut env = MundoGrelha2D::novo(config);
     let mut s = env.iniciar();
     let mut passos = 0;

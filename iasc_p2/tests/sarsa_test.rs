@@ -1,7 +1,7 @@
 use iasc_p2::{
     agente::Agente,
     ambiente::{Acao, Ambiente, Estado},
-    aprendizagem::Sarsa,
+    aprendizagem::sarsa::Sarsa,
     memoria::Memoria,
     politica::greedy::Greedy,
 };

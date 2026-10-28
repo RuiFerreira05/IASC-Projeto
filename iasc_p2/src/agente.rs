@@ -1,6 +1,9 @@
 use crate::{
     ambiente::{Acao, Ambiente, Estado},
-    aprendizagem::Sarsa,
+    aprendizagem::{
+        aprendizagem::{Aprendizagem, Transicao},
+        sarsa::Sarsa,
+    },
     memoria::Memoria,
     politica::{greedy::Greedy, politica::Politica},
 };
@@ -32,7 +35,7 @@ Ciclo de Controlo do Algoritmo SARSA (por Episódio):
    - Se o estado s' for terminal, terminar o episódio.
    - Caso contrário, transitar de estado e ação: s ← s', a ← a'.
 */
-pub struct Agente<P: Politica> {
+pub struct Agente<P: Politica, A: Aprendizagem> {
     /// Memória de aprendizagem tabular que armazena a função de valor Q(s, a).
     pub memoria: Memoria,
 
@@ -40,13 +43,13 @@ pub struct Agente<P: Politica> {
     pub politica: P,
 
     /// Algoritmo de aprendizagem por reforço por diferença temporal (SARSA).
-    pub algoritmo_aprendizagem: Sarsa,
+    pub algoritmo_aprendizagem: A,
 
     /// Conjunto de ações admissíveis no ambiente.
     pub accoes: Vec<Acao>,
 }
 
-impl<P: Politica> Agente<P> {
+impl<P: Politica, A: Aprendizagem> Agente<P, A> {
     /**
     Inicializa um agente de aprendizagem por reforço com os componentes fornecidos.
 
@@ -59,7 +62,7 @@ impl<P: Politica> Agente<P> {
     pub fn iniciar(
         memoria: Memoria,
         politica: P,
-        algoritmo_aprendizagem: Sarsa,
+        algoritmo_aprendizagem: A,
         accoes: Vec<Acao>,
     ) -> Self {
         Self {
@@ -94,25 +97,23 @@ impl<P: Politica> Agente<P> {
     pub fn treinar_episodio(&mut self, ambiente: &mut impl Ambiente) {
         let mut s = ambiente.iniciar();
         let mut a = self.selecionar_acao(&s);
-
         loop {
             let (s_linha, r, fim) = ambiente.passo(a);
             let a_linha = self.selecionar_acao(&s_linha);
-
-            self.algoritmo_aprendizagem.aprender(
-                s,
+            let transicao = Transicao {
+                s: &s,
                 a,
                 r,
-                s_linha.clone(),
-                a_linha,
-                fim,
-                &mut self.memoria,
-            );
-
+                s_linha: &s_linha,
+                a_linha: Some(a_linha),
+                r#final: fim,
+                accoes: &self.accoes,
+            };
+            self.algoritmo_aprendizagem
+                .aprender(transicao, &mut self.memoria);
             if fim {
                 break;
             }
-
             s = s_linha;
             a = a_linha;
         }
