@@ -6,6 +6,7 @@ use rand::{
 use crate::{
     ambiente::{Acao, Estado},
     memoria::Memoria,
+    politica::politica::Politica,
 };
 
 /**
@@ -122,6 +123,14 @@ impl Greedy {
             .expect("A lista de acções não pode estar vazia")
     }
 }
+
+impl Politica for Greedy {
+    fn selecionar_acao(&self, s: &Estado, accoes: &[Acao], memoria: &Memoria) -> Acao {
+        self.selecionar_acao(s, accoes, memoria)
+    }
+}
+
+// ########### TESTES ###########
 
 #[cfg(test)]
 mod tests {

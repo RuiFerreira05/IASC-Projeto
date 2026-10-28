@@ -2,7 +2,7 @@ use crate::{
     ambiente::{Acao, Ambiente, Estado},
     aprendizagem::Sarsa,
     memoria::Memoria,
-    politica::Greedy,
+    politica::{greedy::Greedy, politica::Politica},
 };
 
 /**
@@ -32,12 +32,12 @@ Ciclo de Controlo do Algoritmo SARSA (por Episódio):
    - Se o estado s' for terminal, terminar o episódio.
    - Caso contrário, transitar de estado e ação: s ← s', a ← a'.
 */
-pub struct Agente {
+pub struct Agente<P: Politica> {
     /// Memória de aprendizagem tabular que armazena a função de valor Q(s, a).
     pub memoria: Memoria,
 
     /// Política de seleção de ação (por exemplo, ε-greedy) que orienta o comportamento do agente.
-    pub politica: Greedy,
+    pub politica: P,
 
     /// Algoritmo de aprendizagem por reforço por diferença temporal (SARSA).
     pub algoritmo_aprendizagem: Sarsa,
@@ -46,7 +46,7 @@ pub struct Agente {
     pub accoes: Vec<Acao>,
 }
 
-impl Agente {
+impl<P: Politica> Agente<P> {
     /**
     Inicializa um agente de aprendizagem por reforço com os componentes fornecidos.
 
@@ -58,7 +58,7 @@ impl Agente {
     */
     pub fn iniciar(
         memoria: Memoria,
-        politica: Greedy,
+        politica: P,
         algoritmo_aprendizagem: Sarsa,
         accoes: Vec<Acao>,
     ) -> Self {
@@ -68,26 +68,6 @@ impl Agente {
             algoritmo_aprendizagem,
             accoes,
         }
-    }
-
-    /**
-    Inicializa um agente de aprendizagem por reforço com configurações padrão de referência.
-
-    Configurações predefinidas dos componentes:
-    - Memória: `Memoria::iniciar_default()` (com valor por omissão neutro 0.0);
-    - Política: `Greedy::iniciar_default()` (estratégia ε-greedy com probabilidade de exploração ε = 0.1);
-    - Algoritmo de aprendizagem: `Sarsa::iniciar_default()` (taxa de aprendizagem α = 0.1 e desconto temporal γ = 0.9).
-
-    Parâmetros:
-    - accoes: Vetor de ações admissíveis no ambiente.
-    */
-    pub fn iniciar_default(accoes: Vec<Acao>) -> Self {
-        Self::iniciar(
-            Memoria::iniciar_default(),
-            Greedy::iniciar_default(),
-            Sarsa::iniciar_default(),
-            accoes,
-        )
     }
 
     /**
@@ -158,13 +138,6 @@ mod tests {
             let terminal = self.estado >= 2;
             (Estado::from(self.estado.to_string()), 1.0, terminal)
         }
-    }
-
-    #[test]
-    fn test_agente_iniciar_default() {
-        let accoes = vec![Acao(0), Acao(1)];
-        let agente = Agente::iniciar_default(accoes.clone());
-        assert_eq!(agente.accoes, accoes);
     }
 
     #[test]
