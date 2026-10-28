@@ -3,10 +3,7 @@ use std::{collections::HashSet, time::Instant};
 use iasc_p2::{
     agente::Agente,
     ambiente::{Acao, Ambiente, Estado},
-    aprendizagem::{
-        q_learning::{self, QLearning},
-        sarsa::Sarsa,
-    },
+    aprendizagem::q_learning::QLearning,
     memoria::Memoria,
     politica::greedy::Greedy,
 };

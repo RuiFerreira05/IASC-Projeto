@@ -1,11 +1,8 @@
 use crate::{
     ambiente::{Acao, Ambiente, Estado},
-    aprendizagem::{
-        aprendizagem::{Aprendizagem, Transicao},
-        sarsa::Sarsa,
-    },
+    aprendizagem::aprendizagem::{Aprendizagem, Transicao},
     memoria::Memoria,
-    politica::{greedy::Greedy, politica::Politica},
+    politica::politica::Politica,
 };
 
 /**
