@@ -1,5 +1,4 @@
 use crate::{
-    ambiente::{Acao, Estado},
     aprendizagem::aprendizagem::{Aprendizagem, Transicao},
     memoria::Memoria,
 };
@@ -67,23 +66,11 @@ impl Sarsa {
     pub fn iniciar(alfa: f32, gama: f32) -> Self {
         Self { alfa, gama }
     }
-
-    /**
-    Inicializa o algoritmo SARSA com os hiperparâmetros predefinidos (α = 0.1 e γ = 0.9).
-
-    Configuração padrão de referência:
-    - α = 0.1: Taxa de aprendizagem moderada que assegura atualizações estáveis da função Q(s, a).
-    - γ = 0.9: Fator de desconto temporal que assegura uma visão a longo prazo na consideração
-      dos retornos futuros diferidos.
-    */
-    pub fn iniciar_default() -> Self {
-        Self::iniciar(0.1, 0.9)
-    }
 }
 
 impl Aprendizagem for Sarsa {
     fn aprender(&mut self, transicao: Transicao, memoria: &mut Memoria) {
-        let j = if transicao.r#final {
+        let j = if transicao.fim {
             transicao.r
         } else {
             let a_linha = transicao.a_linha.expect("SARSA requires next action a'");
@@ -95,16 +82,67 @@ impl Aprendizagem for Sarsa {
     }
 }
 
-// ########### TESTES ###########
-
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::ambiente::{Acao, Estado};
 
     #[test]
-    fn test_iniciar_default() {
-        let sarsa = Sarsa::iniciar_default();
-        assert_eq!(sarsa.alfa, 0.1);
-        assert_eq!(sarsa.gama, 0.9);
+    fn test_sarsa_atualizacao_nao_terminal() {
+        let mut mem = Memoria::iniciar_default();
+        let s0 = Estado::from("s0");
+        let s1 = Estado::from("s1");
+        let a0 = Acao(0);
+        let a1 = Acao(1);
+        let accoes = vec![a0, a1];
+
+        // Q(s1, a0) = 4.0, Q(s1, a1) = 10.0
+        mem.actualizar(s1.clone(), a0, 4.0);
+        mem.actualizar(s1.clone(), a1, 10.0);
+
+        let mut sarsa = Sarsa::iniciar(0.5, 0.9);
+
+        // No SARSA (On-Policy), o retorno usa a_linha selecionada (neste caso a0 = 4.0 em vez de max_a = 10.0)
+        let transicao = Transicao {
+            s: &s0,
+            a: a0,
+            r: 2.0,
+            s_linha: &s1,
+            a_linha: Some(a0),
+            fim: false,
+            accoes: &accoes,
+        };
+
+        sarsa.aprender(transicao, &mut mem);
+
+        // J = 2.0 + 0.9 * Q(s1, a0) = 2.0 + 0.9 * 4.0 = 5.6
+        // Q_novo = 0.0 + 0.5 * (5.6 - 0.0) = 2.8
+        assert_eq!(mem.q(&s0, a0), 2.8);
+    }
+
+    #[test]
+    fn test_sarsa_atualizacao_terminal() {
+        let mut mem = Memoria::iniciar_default();
+        let s0 = Estado::from("s0");
+        let s_fim = Estado::from("s_fim");
+        let a0 = Acao(0);
+        let accoes = vec![a0];
+
+        let mut sarsa = Sarsa::iniciar(0.5, 0.9);
+        let transicao = Transicao {
+            s: &s0,
+            a: a0,
+            r: 10.0,
+            s_linha: &s_fim,
+            a_linha: None,
+            fim: true,
+            accoes: &accoes,
+        };
+
+        sarsa.aprender(transicao, &mut mem);
+
+        // J = r = 10.0
+        // Q_novo = 0.0 + 0.5 * (10.0 - 0.0) = 5.0
+        assert_eq!(mem.q(&s0, a0), 5.0);
     }
 }

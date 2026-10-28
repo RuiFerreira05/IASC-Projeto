@@ -106,7 +106,7 @@ impl<P: Politica, A: Aprendizagem> Agente<P, A> {
                 r,
                 s_linha: &s_linha,
                 a_linha: Some(a_linha),
-                r#final: fim,
+                fim,
                 accoes: &self.accoes,
             };
             self.algoritmo_aprendizagem

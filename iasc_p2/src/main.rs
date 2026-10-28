@@ -3,7 +3,10 @@ use std::{collections::HashSet, time::Instant};
 use iasc_p2::{
     agente::Agente,
     ambiente::{Acao, Ambiente, Estado},
-    aprendizagem::sarsa::Sarsa,
+    aprendizagem::{
+        q_learning::{self, QLearning},
+        sarsa::Sarsa,
+    },
     memoria::Memoria,
     politica::greedy::Greedy,
 };
@@ -188,7 +191,7 @@ struct PassoTrajetoria {
 
 // Recolhe a sequência completa de passos da trajetória ótima
 fn obter_trajetoria_otima(
-    agente: &Agente<Greedy, Sarsa>,
+    agente: &Agente<Greedy, QLearning>,
     config: &Configuracao,
 ) -> Vec<PassoTrajetoria> {
     let mut env = MundoGrelha2D::novo(config);
@@ -279,7 +282,7 @@ fn main() {
     let config = Configuracao::padrao();
 
     println!("========================================================================");
-    println!("     APRENDIZAGEM POR REFORÇO (SARSA) EM MUNDO DE GRELHA 2D             ");
+    println!("      APRENDIZAGEM POR REFORÇO (Q_LEARNING) EM MUNDO DE GRELHA 2D       ");
     println!("========================================================================");
     println!("Configuração da Experiência:");
     println!(
@@ -310,8 +313,9 @@ fn main() {
     let accoes = vec![ACAO_CIMA, ACAO_BAIXO, ACAO_ESQUERDA, ACAO_DIREITA];
     let memoria = Memoria::iniciar_default();
     let politica = Greedy::iniciar(config.epsilon);
-    let sarsa = Sarsa::iniciar(config.alfa, config.gama);
-    let mut agente = Agente::iniciar(memoria, politica, sarsa, accoes);
+    // let sarsa = Sarsa::iniciar(config.alfa, config.gama);
+    let q_learning = QLearning::iniciar(config.alfa, config.gama);
+    let mut agente = Agente::iniciar(memoria, politica, q_learning, accoes);
 
     let mut ambiente = MundoGrelha2D::novo(&config);
 

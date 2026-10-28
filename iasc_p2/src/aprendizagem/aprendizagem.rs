@@ -9,7 +9,7 @@ pub struct Transicao<'a> {
     pub r: f32,
     pub s_linha: &'a Estado,
     pub a_linha: Option<Acao>,
-    pub r#final: bool,
+    pub fim: bool,
     pub accoes: &'a [Acao],
 }
 
