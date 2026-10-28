@@ -119,6 +119,8 @@ impl<P: Politica, A: Aprendizagem> Agente<P, A> {
 
 #[cfg(test)]
 mod tests {
+    use crate::{aprendizagem::sarsa::Sarsa, politica::greedy::Greedy};
+
     use super::*;
 
     struct MockAmbienteCurto {
@@ -147,7 +149,7 @@ mod tests {
 
         mem.actualizar(s0.clone(), a1, 10.0);
 
-        let politica = Greedy::iniciar(0.0); // 100% guloso
+        let politica = Greedy::iniciar(0.0); // 100% greedy
         let sarsa = Sarsa::iniciar(0.1, 0.9);
         let agente = Agente::iniciar(mem, politica, sarsa, vec![a0, a1]);
 
