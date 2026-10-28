@@ -16,19 +16,19 @@ Arquitetura do Agente:
 - Memória de Aprendizagem (memoria): Mantém as estimativas tabulares da função de valor
   de ação Q(s, a) para os pares (estado, ação) explorados.
 - Política de Decisão (politica): Estratégia de seleção de ações que gere o dilema entre
-  exploração e aproveitamento (estratégia ε-greedy).
+  exploração e aproveitamento (por exemplo, estratégia epsilon-greedy).
 - Algoritmo de Aprendizagem (algoritmo_aprendizagem): Mecanismo de atualização por
-  diferença temporal (SARSA) responsável pelo ajuste iterativo dos valores Q(s, a).
+  diferença temporal (por exemplo, SARSA ou Q-Learning) responsável pelo ajuste iterativo dos valores Q(s, a).
 - Espaço de Ações (accoes): Conjunto finito de ações admissíveis que o agente pode executar.
 
-Ciclo de Controlo do Algoritmo SARSA (por Episódio):
+Ciclo de Controlo e Treino do Agente (por Episódio):
 1. Iniciar o ambiente e obter o estado inicial: s = ambiente.iniciar().
 2. Selecionar a ação inicial com base na política: a = selecionar_acao(s).
 3. Repetir por cada passo até atingir um estado terminal:
    - Executar a ação a no ambiente, observando o novo estado s', a recompensa instantânea r
-     e o indicador de terminação final.
-   - Selecionar a próxima ação a' para o estado s' utilizando a mesma política: a' = selecionar_acao(s').
-   - Executar o passo de aprendizagem: aprender(s, a, r, s', a', final).
+     e o indicador de terminação fim.
+   - Selecionar a próxima ação a' para o estado s' utilizando a política de decisão: a' = selecionar_acao(s').
+   - Executar o passo de aprendizagem: algoritmo_aprendizagem.aprender(transicao, &mut memoria).
    - Se o estado s' for terminal, terminar o episódio.
    - Caso contrário, transitar de estado e ação: s ← s', a ← a'.
 */
@@ -36,10 +36,10 @@ pub struct Agente<P: Politica, A: Aprendizagem> {
     /// Memória de aprendizagem tabular que armazena a função de valor Q(s, a).
     pub memoria: Memoria,
 
-    /// Política de seleção de ação (por exemplo, ε-greedy) que orienta o comportamento do agente.
+    /// Política de seleção de ação (por exemplo, epsilon-greedy) que orienta o comportamento do agente.
     pub politica: P,
 
-    /// Algoritmo de aprendizagem por reforço por diferença temporal (SARSA).
+    /// Algoritmo de aprendizagem por reforço por diferença temporal (por exemplo, SARSA ou Q-Learning).
     pub algoritmo_aprendizagem: A,
 
     /// Conjunto de ações admissíveis no ambiente.
@@ -52,8 +52,8 @@ impl<P: Politica, A: Aprendizagem> Agente<P, A> {
 
     Parâmetros:
     - memoria: Instância da memória tabular Q(s, a).
-    - politica: Instância da política de seleção de ação (ε-greedy).
-    - algoritmo_aprendizagem: Instância do algoritmo SARSA.
+    - politica: Instância da política de seleção de ação (por exemplo, Greedy).
+    - algoritmo_aprendizagem: Instância do algoritmo de aprendizagem (por exemplo, Sarsa ou QLearning).
     - accoes: Vetor de ações admissíveis no ambiente.
     */
     pub fn iniciar(
@@ -79,16 +79,16 @@ impl<P: Politica, A: Aprendizagem> Agente<P, A> {
     }
 
     /**
-    Executa o treino completo de um episódio de interação entre o agente e o ambiente segundo o algoritmo SARSA.
+    Executa o treino completo de um episódio de interação entre o agente e o ambiente segundo o algoritmo de aprendizagem configurado.
 
     Etapas do algoritmo:
     1. Obtenção do estado inicial s através de `ambiente.iniciar()`.
-    2. Seleção da primeira ação a = selecionar_acao(s) segundo a política ε-greedy.
+    2. Seleção da primeira ação a = selecionar_acao(s) segundo a política de decisão do agente.
     3. Ciclo iterativo de transições:
-       - O ambiente executa o passo com a ação a, retornando (s', r, final).
-       - O agente seleciona a próxima ação a' para o estado s' segundo a política ε-greedy.
-       - O algoritmo SARSA atualiza a estimativa Q(s, a) na memória com a experiência (s, a, r, s', a', final).
-       - Caso final seja verdadeiro, o episódio é concluído (break).
+       - O ambiente executa o passo com a ação a, retornando (s', r, fim).
+       - O agente seleciona a próxima ação a' para o estado s' segundo a política de decisão.
+       - O algoritmo de aprendizagem atualiza a estimativa Q(s, a) na memória com base na transição observada.
+       - Caso fim seja verdadeiro, o episódio é concluído (break).
        - Caso contrário, os apontadores de estado e ação avançam: s = s', a = a'.
     */
     pub fn treinar_episodio(&mut self, ambiente: &mut impl Ambiente) {

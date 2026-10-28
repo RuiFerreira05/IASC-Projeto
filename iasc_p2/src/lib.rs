@@ -1,7 +1,7 @@
 // Biblioteca de Aprendizagem por Reforço (Reinforcement Learning)
 //
 // Implementação de uma arquitetura de aprendizagem por reforço baseada em métodos de Diferença Temporal (Temporal Difference - TD),
-// com controlo on-policy (algoritmo SARSA) e estratégia de seleção de ações com compromisso de exploração e aproveitamento (epsilon-greedy).
+// com controlo on-policy (algoritmo SARSA) e off-policy (algoritmo Q-Learning), e estratégias de seleção de ações com compromisso de exploração e aproveitamento (epsilon-greedy).
 //
 // Fundamentação Teórica:
 //
@@ -26,13 +26,15 @@
 //   para aquisição de experiência e o aproveitamento do conhecimento já adquirido para maximizar a recompensa (política epsilon-greedy).
 // - Controlo On-Policy (SARSA): O algoritmo SARSA (State-Action-Reward-State-Action) utiliza a mesma política tanto para selecionar
 //   a ação a executar no ambiente como para estimar o retorno futuro (J = r + gamma * Q(s', a')).
+// - Controlo Off-Policy (Q-Learning): O algoritmo Q-Learning utiliza a política atual para selecionar a ação no ambiente,
+//   mas estima o retorno futuro considerando a ação ótima que maximiza o valor no próximo estado (J = r + gamma * max_a Q(s', a)).
 //
 // Módulos da Biblioteca:
 // - ambiente: Abstração do ambiente, estados (s), ações (a) e ciclo de interação do agente.
 // - memoria: Memória de aprendizagem tabular para representação da função de valor de ação Q(s, a).
-// - politica: Estratégias de seleção de ação, implementando a política epsilon-greedy com desempate estocástico.
-// - aprendizagem: Algoritmo de aprendizagem por diferença temporal SARSA com tratamento de estados terminais.
-// - agente: Agente autónomo que integra memória, política e aprendizagem para treino e interação por episódios.
+// - politica: Estratégias de seleção de ação (trait Politica), incluindo a política epsilon-greedy (struct Greedy) com desempate estocástico.
+// - aprendizagem: Abstração de algoritmos de aprendizagem por diferença temporal (trait Aprendizagem), incluindo SARSA (on-policy) e Q-Learning (off-policy) com tratamento de estados terminais.
+// - agente: Agente autónomo genérico (Agente<P, A>) que integra memória, política e aprendizagem para treino e interação por episódios.
 
 pub mod agente;
 pub mod ambiente;

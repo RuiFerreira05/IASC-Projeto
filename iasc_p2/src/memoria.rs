@@ -23,7 +23,7 @@ Fundamentação Teórica:
   podem incentivar a exploração inicial de ações não visitadas.
 - Atualização Incremental: À medida que novas transições e recompensas são observadas,
   os valores de Q(s, a) são atualizados incrementalmente por algoritmos de diferença temporal
-  (como o SARSA), convergindo no limite para os valores ótimos caso cada par estado-ação
+  (como SARSA ou Q-Learning), convergindo no limite para os valores ótimos caso cada par estado-ação
   seja visitado um número suficiente de vezes.
 */
 #[allow(non_snake_case)]
