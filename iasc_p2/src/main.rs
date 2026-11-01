@@ -1,5 +1,8 @@
-// O estado atual deste ficheiro representa um pequeno teste para verificação da implementação e usabilidade da biblioteca, e não estará presente na ultima entrega.
-// A aplicação anteriormente presente neste ficheiro foi removida devido a problemas de compatibilidade com o novo sistema modularizado de Learning e Policy no Agente.
+// O estado atual deste ficheiro representa um pequeno teste para verificação
+// da implementação e usabilidade da biblioteca, e não estará presente na ultima entrega.
+//
+// A aplicação anteriormente presente neste ficheiro foi removida devido a problemas
+// de compatibilidade com o novo sistema modularizado de Learning e Policy no Agente.
 
 use iasc_p2::{
     agente::Agente,
