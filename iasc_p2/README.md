@@ -42,6 +42,24 @@ let mut agente = Agente::iniciar(memoria, politica, algoritmo, accoes);
 // agente.treinar_episodio(&mut ambiente);
 ```
 
+## Como correr a aplicação exemplo
+
+A biblioteca possui uma aplicação exemplo para testes em `main.rs`.
+Para correr esta aplicação, basta correr o seguinte comando com o toolchain rust presente no sistema.
+
+```bash
+cargo run
+```
+
+A flag "--release" pode ser adicionada para uma execução mais rápida, embora que a execução de debug já seja rapida o suficiente para não se notar grande diferença.
+
+Em caso de ser impossivel a execução da aplicação exemplo, encontram-se também disponiveis os binários da aplicação no folder `target\release\`, para windows e linux, tal como o output de uma execução padrão dentro do ficheiro `OUTPUT_EXEMPLO.txt`.
+
+### Como configurar a aplicação exemplo
+
+A aplicação exemplo possuí um *struct* que permite configurar os seus parâmetros. Este *struct* encontra-se nas linhas 12-33 do ficheiro `main.rs`.
+Uma explicação de cada parâmetro pode ser encontrada logo abaixo da função "main", nas linhas 42-69.
+
 ## Como correr os testes
 
 A biblioteca possui uma suite de testes unitários que cobre todos os módulos e componentes (incluindo transições terminais e não terminais de SARSA e Q-Learning, seleção de ações da política epsilon-greedy e ciclo de treino do agente).
@@ -75,5 +93,6 @@ cargo doc --open
 ## Uso de IA
 
 IA foi utilizada para apoio na elaboração da documentação técnica e na geração complementar da suite de testes unitários dos módulos.
+Adicionalmente, foi utilizada IA para melhorar a apresentação dos dados na aplicação em `main.rs`.
 
 A implementação da biblioteca e a estruturação lógica dos seus algoritmos foi desenvolvida inteiramente pelo estudante.

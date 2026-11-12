@@ -8,23 +8,33 @@ use iasc_p2::{
     politica::greedy::Greedy,
 };
 
-// AÇÕES
+fn main() {
+    // let config = Configuracao {
+    //     largura: 15,
+    //     altura: 15,
+    //     inicio: (0, 0),
+    //     meta: (14, 14),
+    //     obstaculos: vec![
+    //         (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (2, 7), (2, 8), (2, 9), (2, 10), (2, 11),
+    //         (4, 4), (5, 4), (6, 4), (7, 4), (8, 4), (9, 4), (10, 4), (11, 4), (12, 4),
+    //         (6, 6), (6, 7), (6, 8), (6, 9), (6, 10), (6, 11), (6, 12), (6, 13), (6, 14),
+    //         (9, 0), (9, 1), (9, 2), (9, 3), (9, 5), (9, 6), (9, 7),
+    //         (8, 10), (9, 10), (10, 10), (11, 10), (12, 10), (13, 10),
+    //         (12, 11), (12, 12), (12, 13),
+    //     ],
+    //     n_episodios: 1500,
+    //     max_passos_episodio: 500,
+    //     alfa: 0.2,
+    //     gama: 0.98,
+    //     epsilon: 0.15,
+    //     recompensa_meta: 100.0,
+    //     penalizacao_passo: -1.0,
+    //     tamanho_bloco: 150,
+    // };
 
-pub const ACAO_CIMA: Acao = Acao(0);
-pub const ACAO_BAIXO: Acao = Acao(1);
-pub const ACAO_ESQUERDA: Acao = Acao(2);
-pub const ACAO_DIREITA: Acao = Acao(3);
+    let config = Configuracao::padrao();
 
-pub const ACTIONS: [Acao; 4] = [ACAO_CIMA, ACAO_BAIXO, ACAO_ESQUERDA, ACAO_DIREITA];
-
-pub fn nome_acao(a: Acao) -> &'static str {
-    match a {
-        ACAO_CIMA => "Cima",
-        ACAO_BAIXO => "Baixo",
-        ACAO_ESQUERDA => "Esquerda",
-        ACAO_DIREITA => "Direita",
-        _ => "Desconhecida",
-    }
+    executar_experiencia(config);
 }
 
 // CONFIGURAÇÃO
@@ -58,42 +68,93 @@ pub struct Configuracao {
     pub tamanho_bloco: usize,
 }
 
+// AÇÕES
+
+pub const ACAO_CIMA: Acao = Acao(0);
+pub const ACAO_BAIXO: Acao = Acao(1);
+pub const ACAO_ESQUERDA: Acao = Acao(2);
+pub const ACAO_DIREITA: Acao = Acao(3);
+
+pub const ACTIONS: [Acao; 4] = [ACAO_CIMA, ACAO_BAIXO, ACAO_ESQUERDA, ACAO_DIREITA];
+
+pub fn nome_acao(a: Acao) -> &'static str {
+    match a {
+        ACAO_CIMA => "Cima",
+        ACAO_BAIXO => "Baixo",
+        ACAO_ESQUERDA => "Esquerda",
+        ACAO_DIREITA => "Direita",
+        _ => "Desconhecida",
+    }
+}
+
 impl Configuracao {
-    /// Retorna os valores padrão da experiência de Grid World (grelha 6x6 com labirinto).
     pub fn padrao() -> Self {
         Self {
-            largura: 6,
-            altura: 6,
+            largura: 15,
+            altura: 15,
             inicio: (0, 0),
-            meta: (5, 5),
+            meta: (14, 14),
             obstaculos: vec![
-                (1, 1),
-                (1, 2),
-                (1, 3),
-                (1, 4),
-                (3, 5),
-                (3, 4),
-                (3, 3),
-                (3, 2),
-                (3, 0),
-                (4, 2),
+                (2, 1),
+                (2, 2),
+                (2, 3),
+                (2, 4),
+                (2, 5),
+                (2, 6),
+                (2, 7),
+                (2, 8),
+                (2, 9),
+                (2, 10),
+                (2, 11),
+                (4, 4),
                 (5, 4),
+                (6, 4),
+                (7, 4),
+                (8, 4),
+                (9, 4),
+                (10, 4),
+                (11, 4),
+                (12, 4),
+                (6, 6),
+                (6, 7),
+                (6, 8),
+                (6, 9),
+                (6, 10),
+                (6, 11),
+                (6, 12),
+                (6, 13),
+                (6, 14),
+                (9, 0),
+                (9, 1),
+                (9, 2),
+                (9, 3),
+                (9, 5),
+                (9, 6),
+                (9, 7),
+                (8, 10),
+                (9, 10),
+                (10, 10),
+                (11, 10),
+                (12, 10),
+                (13, 10),
+                (12, 11),
+                (12, 12),
+                (12, 13),
             ],
-            n_episodios: 600,
-            max_passos_episodio: 200,
+            n_episodios: 1500,
+            max_passos_episodio: 500,
             alfa: 0.2,
-            gama: 0.95,
+            gama: 0.98,
             epsilon: 0.15,
             recompensa_meta: 100.0,
             penalizacao_passo: -1.0,
-            tamanho_bloco: 60,
+            tamanho_bloco: 150,
         }
     }
 }
 
 // AMBIENTE
 
-/// Ambiente discreto de navegação 2D em grelha com barreiras intransponíveis.
 pub struct MundoGrelha2D {
     largura: i32,
     altura: i32,
@@ -319,7 +380,7 @@ fn imprimir_tabela_evolucao(metricas: &[MetricasBloco]) {
     );
     for m in metricas {
         println!(
-            "| {:>6} .. {:<6} | {:>13.1} | {:>17.1} | {:>15.1}% | {:>11.3}s |",
+            "| {:>6} .. {:<6}  | {:>13.1} | {:>17.1} | {:>15.1}% | {:>11.3}s |",
             m.bloco_inicio,
             m.bloco_fim,
             m.passos_medios,
@@ -360,11 +421,8 @@ fn imprimir_tabela_valores_q(
         }
     }
 
-    let selecionados: Vec<(i32, i32)> = if estados_para_exibir.len() > 18 {
-        estados_para_exibir.into_iter().step_by(2).collect()
-    } else {
-        estados_para_exibir
-    };
+    let step = (estados_para_exibir.len() / 16).max(1);
+    let selecionados: Vec<(i32, i32)> = estados_para_exibir.into_iter().step_by(step).collect();
 
     for (x, y) in selecionados {
         let s = MundoGrelha2D::coords_para_estado((x, y));
@@ -377,7 +435,7 @@ fn imprimir_tabela_valores_q(
         let a_opt = Greedy::accao_sofrega(&s, &agente.accoes, &agente.memoria);
 
         println!(
-            "|    ({:>1}, {:<1})    | {:>9.2} | {:>9.2} | {:>9.2} | {:>9.2} | {:>9.2} | {:>14} |",
+            "|   ({:>2}, {:<2})   | {:>9.2} | {:>9.2} | {:>9.2} | {:>9.2} | {:>9.2} | {:>14} |",
             x,
             y,
             q_cima,
@@ -446,7 +504,7 @@ fn imprimir_trajetoria_otima(agente: &Agente<Greedy, QLearning>, config: &Config
     );
     for p in &trajetoria {
         println!(
-            "| {:>5} |      ({:>1}, {:<1})       | {:>14} | {:>10.1} |       ({:>1}, {:<1})       | {:>9.2} |",
+            "| {:>5} |     ({:>2}, {:<2})      | {:>14} | {:>10.1} |      ({:>2}, {:<2})      | {:>9.2} |",
             p.passo,
             p.pos_atual.0,
             p.pos_atual.1,
@@ -556,31 +614,4 @@ pub fn executar_experiencia(config: Configuracao) {
     imprimir_tabela_evolucao(&historico_blocos);
     imprimir_tabela_valores_q(&agente, &config, &ambiente);
     imprimir_trajetoria_otima(&agente, &config);
-}
-
-fn main() {
-    // let config = Configuracao {
-    //     largura: 6,
-    //     altura: 6,
-    //     inicio: (0, 0),
-    //     meta: (5, 5),
-    //     obstaculos: vec![
-    //         (1, 1), (1, 2), (1, 3), (1, 4),
-    //         (3, 5), (3, 4), (3, 3), (3, 2), (3, 0),
-    //         (4, 2),
-    //         (5, 4),
-    //     ],
-    //     n_episodios: 600,
-    //     max_passos_episodio: 200,
-    //     alfa: 0.2,
-    //     gama: 0.95,
-    //     epsilon: 0.15,
-    //     recompensa_meta: 100.0,
-    //     penalizacao_passo: -1.0,
-    //     tamanho_bloco: 60,
-    // };
-
-    let config = Configuracao::padrao();
-
-    executar_experiencia(config);
 }
