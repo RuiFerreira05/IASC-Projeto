@@ -59,21 +59,24 @@ mod hill_climb_tests {
             fn sucessores(&self, estado: Grelha2dEstado) -> Vec<Grelha2dEstado> {
                 let mut sucessores: Vec<Grelha2dEstado> = Vec::new();
 
-                for x in (estado.x - 1)..=(estado.x + 1) {
-                    if !(1..self.ambiente.max_x).contains(&x) {
+                for x in (estado.x as i64 - 1)..=(estado.x as i64 + 1) {
+                    if !(1..self.ambiente.max_x as i64).contains(&x) {
                         continue; // x out of bouds
                     }
 
-                    for y in (estado.y - 1)..=(estado.y + 1) {
-                        if !(1..self.ambiente.max_y).contains(&x) {
+                    for y in (estado.y as i64 - 1)..=(estado.y as i64 + 1) {
+                        if !(1..self.ambiente.max_y as i64).contains(&x) {
                             continue; // y out of bounds
                         }
 
-                        if x == estado.x && y == estado.y {
+                        if x == estado.x as i64 && y == estado.y as i64 {
                             continue; // own state
                         }
 
-                        sucessores.push(Grelha2dEstado { x, y });
+                        sucessores.push(Grelha2dEstado {
+                            x: x as u64,
+                            y: y as u64,
+                        });
                     }
                 }
 
