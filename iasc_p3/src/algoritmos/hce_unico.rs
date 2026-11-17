@@ -1,6 +1,6 @@
 use rand::seq::{IndexedRandom, SliceRandom};
 
-use crate::problema::{Estado, Problema};
+use crate::ambiente::{Estado, Problema};
 
 pub fn hce_unico<E: Estado>(problema: &impl Problema<E>) -> E {
     let mut estado = problema.estado_inicial();
@@ -96,6 +96,10 @@ mod hce_unico_tests {
 
                 self.meta_valor - dist
             }
+
+            fn solucao(&self, estado: Grelha2dEstado) -> bool {
+                self.meta == estado
+            }
         }
 
         let grelha = Grelha2d {
@@ -110,6 +114,6 @@ mod hce_unico_tests {
         };
 
         let estado_final = hce_unico(&prob);
-        assert_eq!(estado_final, prob.meta)
+        assert!(prob.solucao(estado_final))
     }
 }

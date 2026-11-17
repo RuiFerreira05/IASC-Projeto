@@ -6,6 +6,8 @@ pub trait Problema<E: Estado> {
     fn sucessores(&self, estado: E) -> Vec<E>;
 
     fn avaliar(&self, estado: E) -> f64;
+
+    fn solucao(&self, estado: E) -> bool;
 }
 
 pub trait Estado: Debug + Copy {}

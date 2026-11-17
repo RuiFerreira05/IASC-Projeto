@@ -1,6 +1,6 @@
 use rand::seq::IndexedRandom;
 
-use crate::problema::{Estado, Problema};
+use crate::ambiente::{Estado, Problema};
 
 pub fn hill_climb_estocastico<E: Estado>(problema: &impl Problema<E>) -> E {
     let mut estado = problema.estado_inicial();
@@ -93,6 +93,10 @@ mod hill_climb_estocastico_tests {
 
                 self.meta_valor - dist
             }
+
+            fn solucao(&self, estado: Grelha2dEstado) -> bool {
+                self.meta == estado
+            }
         }
 
         let grelha = Grelha2d {
@@ -107,6 +111,6 @@ mod hill_climb_estocastico_tests {
         };
 
         let estado_final = hill_climb_estocastico(&prob);
-        assert_eq!(estado_final, prob.meta)
+        assert!(prob.solucao(estado_final))
     }
 }
